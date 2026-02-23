@@ -2,235 +2,262 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Vertriebs-Check 01–08</title>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#e20074">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vertriebs Check</title>
 <style>
-:root {
-    --magenta:#e20074;
-    --bg:#f6f6f8;
-    --card:#ffffff;
-    --text:#111;
-    --muted:#666;
+:root{
+--magenta:#e20074;
+--bg:#f4f5f7;
+--card:#ffffff;
+--text:#111;
+--muted:#777;
+--warn:#ff9500;
 }
-* { box-sizing:border-box; }
-body {
-    margin:0;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-    background:var(--bg);
-    color:var(--text);
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+background:var(--bg);
 }
-header {
-    position:sticky;
-    top:0;
-    background:var(--magenta);
-    color:white;
-    padding:16px;
-    font-weight:600;
-    font-size:18px;
+header{
+background:var(--magenta);
+color:white;
+padding:20px 16px;
+position:sticky;
+top:0;
+z-index:10;
+display:flex;
+justify-content:center;
+align-items:center;
 }
-.container {
-    padding:12px;
+.score{
+font-size:28px;
+font-weight:600;
 }
-.section {
-    margin-top:20px;
+.warnIcon{
+position:absolute;
+right:16px;
+font-size:22px;
+display:none;
+cursor:pointer;
 }
-.section h2 {
-    font-size:14px;
-    color:var(--muted);
-    margin-bottom:8px;
+.container{padding:12px;}
+.sectionTitle{
+margin:20px 0 8px;
+font-size:14px;
+color:var(--muted);
 }
-.card {
-    background:var(--card);
-    padding:12px;
-    border-radius:12px;
-    margin-bottom:8px;
+.card{
+background:var(--card);
+padding:12px;
+border-radius:12px;
+margin-bottom:8px;
 }
-.task {
-    font-size:14px;
-    margin-bottom:8px;
+.task{font-size:14px;margin-bottom:6px;}
+.stars{display:flex;gap:8px;}
+.star{
+font-size:22px;
+color:#ccc;
+cursor:pointer;
 }
-.stars {
-    display:flex;
-    gap:8px;
+.star.active{color:var(--magenta);}
+.footer{
+position:sticky;
+bottom:0;
+background:white;
+padding:12px;
+border-top:1px solid #ddd;
 }
-.star {
-    font-size:22px;
-    color:#ccc;
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:var(--magenta);
+color:white;
+font-weight:600;
+font-size:16px;
 }
-.star.active {
-    color:var(--magenta);
+.sheet{
+position:fixed;
+bottom:-100%;
+left:0;
+right:0;
+background:white;
+border-radius:20px 20px 0 0;
+padding:20px;
+transition:0.3s;
+box-shadow:0 -5px 20px rgba(0,0,0,0.2);
+max-height:70%;
+overflow:auto;
 }
-.footer {
-    position:sticky;
-    bottom:0;
-    background:white;
-    padding:12px;
-    border-top:1px solid #ddd;
-}
-.scoreBox {
-    background:#f2f2f2;
-    padding:10px;
-    border-radius:10px;
-    margin-bottom:10px;
-}
-button {
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:var(--magenta);
-    color:white;
-    font-weight:600;
-    font-size:16px;
-}
-.bad {
-    color:#c00000;
-    font-weight:600;
+.sheet.open{bottom:0;}
+.sheet h3{margin-top:0;}
+.sheetItem{margin-bottom:8px;font-size:14px;}
+.closeBtn{
+position:absolute;
+right:16px;
+top:10px;
+cursor:pointer;
+font-size:18px;
 }
 </style>
 </head>
 <body>
 
-<header>Vertriebs Check 01–08</header>
+<header>
+<div class="score" id="scoreDisplay">–</div>
+<div class="warnIcon" id="warnIcon">⚠️</div>
+</header>
+
 <div class="container" id="app"></div>
 
 <div class="footer">
-    <div class="scoreBox">
-        Gesamt-Score: <strong id="scorePercent">0%</strong><br>
-        <div id="issues"></div>
-    </div>
-    <button onclick="exportTXT()">Export als TXT</button>
+<button onclick="exportTXT()">Export als TXT</button>
+</div>
+
+<div class="sheet" id="sheet">
+<div class="closeBtn" onclick="closeSheet()">✕</div>
+<h3>Baustellen (&lt;70%)</h3>
+<div id="sheetContent"></div>
 </div>
 
 <script>
 const structure = {
 "01 CHECK-IN":[
 "Kunden wahrnehmen","Auf Kunden zugehen","Freundlich begrüßen",
-"Wohlfühl-Atmosphäre schaffen","Gut aufgehoben Gefühl schaffen",
+"Wohlfühl-Atmosphäre","Gut aufgehoben Gefühl",
 "Getränke anbieten","Smalltalk führen","DWM nutzen",
-"Kunden im DWM anlegen","Erscheinungsbild beachten",
-"Auftreten beachten","Shopauftritt sicherstellen"
+"Kunden im DWM anlegen","Erscheinungsbild",
+"Auftreten","Shopauftritt"
 ],
-"02 BEDARFS- & UMFELDANALYSE":[
-"Fokus auf Kunden","Keine Systemnutzung (Start)","10 Infos erfassen",
-"Infos übertragen","Anliegen aufnehmen","Wünsche erfragen",
-"Bedürfnisse erfragen","PK/GK identifizieren","Kaufmotive erkennen",
-"Bedarf fragen","Umfeld fragen","Bestand fragen",
-"Gesprächsnotiz nutzen","Systemcheck starten",
-"Bestand vervollständigen","Magenta View prüfen",
-"KEK aktualisieren","Glasfaser prüfen","Systeme beherrschen"
-],
-"03 LÖSUNG ERARBEITEN":[
-"Infos zusammenfassen","Bildabgleich","JA einholen",
-"Weitere Wünsche ermöglichen","Cross-Selling",
-"Upselling","Versteckte Bedarfe",
-"Geduld erbitten","Experten einbinden"
-],
-"04 LÖSUNG VORSTELLEN":[
-"Lösung ohne Preis","Lösung skizzieren","Nutzen hervorheben",
-"Shop live nutzen","Shop digital nutzen",
-"Erlebbar machen","Finaler Bildabgleich","Weitere JA"
-],
-"05 ANGEBOT VORSTELLEN":[
-"Ins Angebotstool","Aktionen nutzen","Angebot mit Preisen"
-],
-"06 EINWANDBEHANDLUNG":[
-"Einwände unterscheiden","Nonverbal beachten",
-"Einwände annehmen","Einwandmethoden"
-],
-"07 ABSCHLUSS & BUCHEN":[
-"Alternativfragen","Abschlussfrage","Stille aushalten",
-"Buchen","Qualitätsstandards"
-],
-"08 KUNDENBINDUNG":[
-"Bestärken","Folgekontakte","Kundenzuführung",
-"BKM","OTV","Leads","POM",
-"Weiterempfehlung","Feedback erklären",
-"SMS","Anruf","Verabschieden","Zur Tür begleiten"
+"02 BEDARFS":[
+"Fokus auf Kunden","Keine Systemnutzung","10 Infos",
+"Infos übertragen","Anliegen","Wünsche",
+"Bedürfnisse","PK/GK","Kaufmotive",
+"Bedarf","Umfeld","Bestand",
+"Gesprächsnotiz","Systemcheck",
+"Bestand vervollständigen","Magenta View",
+"KEK","Glasfaser","Systeme"
 ]
 };
 
-const app = document.getElementById("app");
-let scores = JSON.parse(localStorage.getItem("vertriebs_scores")) || {};
+let scores = JSON.parse(localStorage.getItem("scores"))||{};
 
-function render() {
-    app.innerHTML="";
-    Object.entries(structure).forEach(([section,tasks])=>{
-        const sec=document.createElement("div");
-        sec.className="section";
-        sec.innerHTML=`<h2>${section}</h2>`;
-        tasks.forEach(task=>{
-            const card=document.createElement("div");
-            card.className="card";
-            const taskId=section+"_"+task;
-            const current=scores[taskId]||0;
-            card.innerHTML=`<div class="task">${task}</div>`;
-            const stars=document.createElement("div");
-            stars.className="stars";
-            for(let i=1;i<=5;i++){
-                const s=document.createElement("div");
-                s.className="star"+(i<=current?" active":"");
-                s.innerHTML="★";
-                s.onclick=()=>{
-                    scores[taskId]=i;
-                    localStorage.setItem("vertriebs_scores",JSON.stringify(scores));
-                    render();
-                    calculate();
-                };
-                stars.appendChild(s);
-            }
-            card.appendChild(stars);
-            sec.appendChild(card);
-        });
-        app.appendChild(sec);
-    });
-    calculate();
+const app=document.getElementById("app");
+
+function render(){
+app.innerHTML="";
+Object.entries(structure).forEach(([section,tasks])=>{
+const title=document.createElement("div");
+title.className="sectionTitle";
+title.innerText=section;
+app.appendChild(title);
+
+tasks.forEach(task=>{
+const card=document.createElement("div");
+card.className="card";
+const id=section+"_"+task;
+const val=scores[id]||0;
+
+card.innerHTML=`<div class="task">${task}</div>`;
+const stars=document.createElement("div");
+stars.className="stars";
+
+for(let i=1;i<=5;i++){
+const s=document.createElement("div");
+s.className="star"+(i<=val?" active":"");
+s.innerHTML="★";
+s.onclick=()=>{
+scores[id]=i;
+localStorage.setItem("scores",JSON.stringify(scores));
+render();
+calculate();
+};
+stars.appendChild(s);
+}
+
+card.appendChild(stars);
+app.appendChild(card);
+});
+});
+calculate();
 }
 
 function calculate(){
-    let total=0;
-    let count=0;
-    let issues=[];
-    Object.entries(structure).forEach(([section,tasks])=>{
-        tasks.forEach(task=>{
-            const id=section+"_"+task;
-            const val=scores[id]||0;
-            total+=val;
-            count++;
-            if((val/5)<0.7){
-                issues.push(task);
-            }
-        });
-    });
-    const percent=((total/(count*5))*100)||0;
-    document.getElementById("scorePercent").innerText=percent.toFixed(1)+"%";
-    document.getElementById("issues").innerHTML=
-        issues.length?`Baustellen: <span class="bad">${issues.join(", ")}</span>`:"Keine Baustellen unter 70%";
+let total=0;
+let count=0;
+let issues=[];
+
+Object.entries(structure).forEach(([section,tasks])=>{
+tasks.forEach(task=>{
+const id=section+"_"+task;
+const val=scores[id]||0;
+if(val>0){
+total+=val;
+count++;
+if((val/5)<0.7){
+issues.push({task,percent:(val/5*100)});
+}
+}
+});
+});
+
+const scoreEl=document.getElementById("scoreDisplay");
+if(count===0){
+scoreEl.innerText="–";
+}else{
+const percent=(total/(count*5))*100;
+scoreEl.innerText=percent.toFixed(1)+"%";
+}
+
+const warn=document.getElementById("warnIcon");
+if(issues.length>0){
+warn.style.display="block";
+warn.onclick=()=>openSheet(issues.sort((a,b)=>a.percent-b.percent).slice(0,5));
+}else{
+warn.style.display="none";
+}
+}
+
+function openSheet(issues){
+const sheet=document.getElementById("sheet");
+const content=document.getElementById("sheetContent");
+content.innerHTML="";
+issues.forEach(i=>{
+content.innerHTML+=`<div class="sheetItem">${i.task} – ${i.percent.toFixed(0)}%</div>`;
+});
+sheet.classList.add("open");
+}
+
+function closeSheet(){
+document.getElementById("sheet").classList.remove("open");
 }
 
 function exportTXT(){
-    let text="Vertriebs Check 01–08\n\n";
-    Object.entries(structure).forEach(([section,tasks])=>{
-        text+=section+"\n";
-        tasks.forEach(task=>{
-            const id=section+"_"+task;
-            text+=`- ${task}: ${scores[id]||0}/5\n`;
-        });
-        text+="\n";
-    });
-    text+=`Gesamt: ${document.getElementById("scorePercent").innerText}\n`;
-    const blob=new Blob([text],{type:"text/plain"});
-    const link=document.createElement("a");
-    link.href=URL.createObjectURL(blob);
-    link.download="vertriebs_check_export.txt";
-    link.click();
+let text="Vertriebs Check\n\n";
+Object.entries(structure).forEach(([section,tasks])=>{
+text+=section+"\n";
+tasks.forEach(task=>{
+const id=section+"_"+task;
+const val=scores[id]||0;
+if(val===0){
+text+=`- ${task}: Nicht bewertet\n`;
+}else{
+text+=`- ${task}: ${val}/5\n`;
+}
+});
+text+="\n";
+});
+text+=`Gesamt: ${document.getElementById("scoreDisplay").innerText}\n`;
+
+const blob=new Blob([text],{type:"text/plain"});
+const link=document.createElement("a");
+link.href=URL.createObjectURL(blob);
+link.download="vertriebs_export.txt";
+link.click();
 }
 
 render();
 </script>
-
 </body>
 </html>
