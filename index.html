@@ -5,41 +5,252 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FFF – Flamingo Feedback</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#e20074">
+<meta name="theme-color" content="#E20074">
 
 <style>
-:root{--magenta:#e20074;--muted:#777;}
-*{box-sizing:border-box;}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:black;overflow-x:hidden;}
+:root{
+--magenta:#E20074;
+--bg:#0c0c10;
+--section:#141418;
+--muted:#777;
+}
 
-#splash{position:fixed;inset:0;background:black;display:flex;align-items:center;justify-content:center;z-index:9999;}
+*{box-sizing:border-box;}
+
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+background:var(--bg);
+color:white;
+overflow-x:hidden;
+}
+
+/* SPLASH */
+#splash{
+position:fixed;
+inset:0;
+background:black;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+}
 #splash img{max-width:80%;}
 
-.hero{height:45vh;min-height:260px;max-height:420px;background:black;display:flex;align-items:center;justify-content:center;}
-.hero img{width:100%;height:100%;object-fit:contain;}
+/* HERO */
+.hero{
+height:45vh;
+min-height:260px;
+max-height:420px;
+background:black;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+.hero img{
+width:100%;
+height:100%;
+object-fit:contain;
+}
 
-.main{background:var(--magenta);border-radius:36px 36px 0 0;margin-top:-30px;padding-top:20px;min-height:100vh;}
-.header{position:sticky;top:0;background:var(--magenta);padding:12px;text-align:center;color:white;font-size:26px;font-weight:600;}
-.warnIcon{position:absolute;right:18px;top:18px;font-size:22px;display:none;cursor:pointer;}
+/* MAIN */
+.main{
+background:var(--bg);
+border-radius:36px 36px 0 0;
+margin-top:-30px;
+padding-top:20px;
+min-height:100vh;
+}
 
-.container{max-width:720px;margin:auto;padding:16px;}
-.sectionTitle{color:white;margin:24px 0 12px;font-weight:600;font-size:15px;}
-.card{background:white;border-radius:16px;padding:16px;margin-bottom:16px;}
-.task{font-size:14px;margin-bottom:8px;}
-.stars{display:flex;gap:10px;}
-.star{font-size:30px;color:#ccc;cursor:pointer;}
-.star.active{color:var(--magenta);}
+/* HEADER */
+.header{
+position:sticky;
+top:0;
+background:var(--bg);
+border-bottom:2px solid var(--magenta);
+padding:16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+z-index:10;
+}
+#scoreDisplay{
+font-size:42px;
+font-weight:700;
+color:var(--magenta);
+}
+.warnIcon{
+font-size:22px;
+display:none;
+cursor:pointer;
+}
 
-.noteToggle{margin-top:8px;font-size:13px;color:var(--muted);cursor:pointer;}
-.noteField{display:none;margin-top:8px;}
+/* CONTAINER */
+.container{
+max-width:900px;
+margin:auto;
+padding:24px;
+}
+
+/* SECTION */
+.section-wrapper{
+background:var(--section);
+border-left:4px solid var(--magenta);
+border-radius:14px;
+padding:20px;
+margin-bottom:28px;
+box-shadow:0 0 18px rgba(226,0,116,0.15);
+transition:.3s;
+}
+.section-wrapper.disabled{
+opacity:0.35;
+border-left-color:#444;
+box-shadow:none;
+}
+
+.section-title{
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-size:20px;
+margin-bottom:14px;
+}
+
+/* SWITCH */
+.switch{
+position:relative;
+width:44px;
+height:24px;
+}
+.switch input{
+opacity:0;
+width:0;
+height:0;
+}
+.slider{
+position:absolute;
+top:0;left:0;right:0;bottom:0;
+background:#555;
+border-radius:24px;
+transition:.3s;
+}
+.slider:before{
+position:absolute;
+content:"";
+height:18px;width:18px;
+left:3px;top:3px;
+background:white;
+border-radius:50%;
+transition:.3s;
+}
+input:checked + .slider{
+background:var(--magenta);
+}
+input:checked + .slider:before{
+transform:translateX(20px);
+}
+
+/* CARD */
+.card{
+background:#1c1c22;
+border-radius:10px;
+padding:14px;
+margin-bottom:14px;
+}
+.task{
+font-size:14px;
+margin-bottom:8px;
+}
+.stars{
+display:flex;
+gap:8px;
+}
+.star{
+font-size:34px;
+color:#444;
+cursor:pointer;
+}
+.star.active{
+color:var(--magenta);
+}
+
+/* NOTE */
+.noteToggle{
+margin-top:8px;
+font-size:13px;
+color:#aaa;
+cursor:pointer;
+}
+.noteField{
+display:none;
+margin-top:8px;
+}
 .noteField.open{display:block;}
-.noteField textarea{width:100%;padding:8px;border-radius:10px;border:1px solid #ddd;resize:none;}
+.noteField textarea{
+width:100%;
+background:#101015;
+color:white;
+border:1px solid #333;
+border-radius:8px;
+padding:8px;
+}
 
-.footer{position:sticky;bottom:0;background:white;padding:14px;border-top:1px solid #ddd;display:flex;gap:10px;}
-button{flex:1;padding:14px;border:none;border-radius:14px;background:var(--magenta);color:white;font-weight:600;font-size:16px;cursor:pointer;}
+/* FOOTER */
+.footer{
+position:sticky;
+bottom:0;
+background:#111;
+padding:14px;
+display:flex;
+gap:10px;
+}
+button{
+flex:1;
+padding:14px;
+border:none;
+border-radius:14px;
+background:var(--magenta);
+color:white;
+font-weight:600;
+font-size:16px;
+cursor:pointer;
+}
 
-.sheet{position:fixed;bottom:-100%;left:0;right:0;background:white;border-radius:24px 24px 0 0;padding:24px;transition:0.3s;box-shadow:0 -5px 20px rgba(0,0,0,0.2);max-height:70%;overflow:auto;}
+/* OVERLAY */
+.sheet{
+position:fixed;
+bottom:-100%;
+left:0;right:0;
+background:#1c1c22;
+border-radius:24px 24px 0 0;
+padding:24px;
+transition:.3s;
+max-height:70%;
+overflow:auto;
+}
 .sheet.open{bottom:0;}
+
+/* PRINT */
+@media print{
+body{background:white;color:black;}
+.section-wrapper{
+background:white;
+border-left:6px solid var(--magenta);
+box-shadow:none;
+}
+.section-wrapper.disabled{
+border-left:6px solid #ccc;
+opacity:1;
+}
+.section-title{
+border-bottom:2px solid var(--magenta);
+padding-bottom:4px;
+}
+#scoreDisplay{
+color:var(--magenta);
+font-size:34px;
+}
+}
 </style>
 </head>
 
@@ -50,6 +261,7 @@ button{flex:1;padding:14px;border:none;border-radius:14px;background:var(--magen
 
 <section class="main">
 <div class="header">
+<span>Flamingo Feedback</span>
 <span id="scoreDisplay">–</span>
 <span class="warnIcon" id="warnIcon">⚠️</span>
 </div>
@@ -76,8 +288,9 @@ window.scrollTo(0,0);
 
 /* STATE */
 var state = JSON.parse(localStorage.getItem("vertriebs_state")) || {};
+var sectionState = JSON.parse(localStorage.getItem("vertriebs_sections")) || {};
 
-/* STRUCTURE 01–08 */
+/* STRUCTURE */
 var structure = {
 "01 CHECK-IN":["Kunden wahrnehmen","Auf Kunden zugehen","Freundlich begrüßen","Wohlfühl-Atmosphäre schaffen","Gut aufgehoben Gefühl schaffen","Getränke anbieten","Smalltalk führen","Digitales Welcome nutzen","Kunden im DWM anlegen","Erscheinungsbild","Auftreten","Shopauftritt"],
 "02 BEDARFS- & UMFELDANALYSE":["Fokus auf Kunden","Keine Systemnutzung","10 Informationen erfassen","Infos übertragen","Anliegen aufnehmen","Wünsche erfragen","Bedürfnisse erfragen","PK/GK identifizieren","Kaufmotive erkennen","Bedarf","Umfeld","Bestand","Gesprächsnotiz","Systemcheck","Bestand vervollständigen","Magenta View","KEK aktualisieren","Glasfaser prüfen","Systeme beherrschen"],
@@ -89,16 +302,21 @@ var structure = {
 "08 KUNDENBINDUNG":["Bestärken","Folgekontakte","Kundenzuführung","BKM","OTV","Leads","POM","Weiterempfehlung","Feedback erklären","SMS","Anruf","Verabschieden","Zur Tür begleiten"]
 };
 
-/* SSOT METRICS */
+/* METRICS */
 function computeMetrics(){
 var total=0,count=0,issues=[];
 for(var section in structure){
+
+if(sectionState[section]===false) continue;
+
 structure[section].forEach(function(task){
 var id=section+"_"+task;
 var rating=state[id]?state[id].rating:0;
 if(rating>0){
 total+=rating;count++;
-if((rating/5)<0.7){issues.push({task:task,percent:(rating/5*100)});}
+if((rating/5)<0.7){
+issues.push({task:task,percent:(rating/5*100)});
+}
 }
 });
 }
@@ -111,19 +329,58 @@ return {score:score,issues:issues};
 function render(){
 var app=document.getElementById("app");
 app.innerHTML="";
+
 for(var section in structure){
+
+if(sectionState[section]===undefined){
+sectionState[section]=true;
+}
+
+var wrapper=document.createElement("div");
+wrapper.className="section-wrapper";
+if(sectionState[section]===false){
+wrapper.classList.add("disabled");
+}
+
 var title=document.createElement("div");
-title.className="sectionTitle";
+title.className="section-title";
 title.innerText=section;
-app.appendChild(title);
+
+var toggleWrap=document.createElement("label");
+toggleWrap.className="switch";
+
+var checkbox=document.createElement("input");
+checkbox.type="checkbox";
+checkbox.checked=sectionState[section];
+
+checkbox.onchange=function(s){
+return function(e){
+sectionState[s]=e.target.checked;
+localStorage.setItem("vertriebs_sections",JSON.stringify(sectionState));
+render();
+};
+}(section);
+
+var slider=document.createElement("span");
+slider.className="slider";
+
+toggleWrap.appendChild(checkbox);
+toggleWrap.appendChild(slider);
+title.appendChild(toggleWrap);
+wrapper.appendChild(title);
 
 structure[section].forEach(function(task){
+
 var id=section+"_"+task;
 var entry=state[id]||{rating:0,note:""};
 
 var card=document.createElement("div");
 card.className="card";
-card.innerHTML="<div class='task'>"+task+"</div>";
+
+var t=document.createElement("div");
+t.className="task";
+t.innerText=task;
+card.appendChild(t);
 
 var stars=document.createElement("div");
 stars.className="stars";
@@ -131,10 +388,12 @@ stars.className="stars";
 for(var i=1;i<=5;i++){
 (function(i){
 var s=document.createElement("div");
-s.className="star"+(i<=entry.rating?" active":"");
-s.innerHTML="★";
+s.className="star";
+if(entry.rating>=i) s.classList.add("active");
+
 s.onclick=function(){
-if(!state[id])state[id]={rating:0,note:""};
+if(sectionState[section]===false) return;
+if(!state[id]) state[id]={rating:0,note:""};
 state[id].rating=i;
 save();
 };
@@ -144,27 +403,35 @@ stars.appendChild(s);
 
 card.appendChild(stars);
 
-var toggle=document.createElement("div");
-toggle.className="noteToggle";
-toggle.innerText="＋ Notiz";
-card.appendChild(toggle);
+var toggleNote=document.createElement("div");
+toggleNote.className="noteToggle";
+toggleNote.innerText="＋ Notiz";
+card.appendChild(toggleNote);
 
 var noteField=document.createElement("div");
 noteField.className="noteField";
 noteField.innerHTML="<textarea rows='3'>"+(entry.note||"")+"</textarea>";
 card.appendChild(noteField);
 
-toggle.onclick=function(){noteField.classList.toggle("open");};
+toggleNote.onclick=function(){
+if(sectionState[section]===false) return;
+noteField.classList.toggle("open");
+};
 
 noteField.querySelector("textarea").oninput=function(e){
-if(!state[id])state[id]={rating:0,note:""};
+if(sectionState[section]===false) return;
+if(!state[id]) state[id]={rating:0,note:""};
 state[id].note=e.target.value;
 localStorage.setItem("vertriebs_state",JSON.stringify(state));
 };
 
-app.appendChild(card);
+wrapper.appendChild(card);
+
 });
+
+app.appendChild(wrapper);
 }
+
 updateUI();
 }
 
@@ -196,12 +463,30 @@ localStorage.setItem("vertriebs_state",JSON.stringify(state));
 render();
 }
 
+/* RESET DIALOG */
+function resetAfterExport(){
+if(confirm("Export erfolgreich. Formular zurücksetzen?")){
+state={};
+localStorage.removeItem("vertriebs_state");
+render();
+}
+}
+
 /* TXT EXPORT */
 function exportTXT(){
 var m=computeMetrics();
 var text="Vertriebs Check\\n\\n";
+
 for(var section in structure){
+
+if(sectionState[section]===false){
 text+=section+"\\n";
+text+="[Vom Nutzer deaktiviert – nicht in Score berücksichtigt]\\n\\n";
+continue;
+}
+
+text+=section+"\\n";
+
 structure[section].forEach(function(task){
 var id=section+"_"+task;
 var entry=state[id];
@@ -211,12 +496,16 @@ if(entry&&entry.note){text+="  Notiz: "+entry.note+"\\n";}
 });
 text+="\\n";
 }
+
 text+="Gesamt-Score: "+m.score+"\\n";
+
 var blob=new Blob([text],{type:"text/plain"});
 var link=document.createElement("a");
 link.href=URL.createObjectURL(blob);
 link.download="vertriebs_export.txt";
 link.click();
+
+resetAfterExport();
 }
 
 /* PDF EXPORT */
@@ -226,25 +515,21 @@ var now=new Date().toLocaleString();
 var win=window.open("","_blank");
 
 win.document.write("<html><head><title>Report</title>");
-win.document.write("<style>body{font-family:Arial;padding:40px;} .header{background:#e20074;color:white;padding:20px;border-radius:8px;} .kpi{margin-top:20px;padding:15px;background:#f4f4f4;border-left:6px solid #e20074;}</style>");
+win.document.write("<style>body{font-family:Arial;padding:40px;} .header{background:#E20074;color:white;padding:20px;border-radius:8px;} .kpi{margin-top:20px;padding:15px;background:#f4f4f4;border-left:6px solid #E20074;}</style>");
 win.document.write("</head><body>");
 
 win.document.write("<div class='header'><h2>Flamingo Feedback – Vertriebsreport</h2><p>Datum: "+now+"</p><p>Gesamt-Score: <strong>"+m.score+"</strong></p></div>");
 
-win.document.write("<div class='kpi'><h3>Entwicklungsfelder (&lt;70%)</h3>");
-if(m.issues.length>0){
-win.document.write("<ul>");
-m.issues.slice(0,5).forEach(function(i){
-win.document.write("<li>"+i.task+" – "+i.percent.toFixed(0)+"%</li>");
-});
-win.document.write("</ul>");
-}else{
-win.document.write("<p>Keine Entwicklungsfelder unter 70 %</p>");
-}
-win.document.write("</div>");
-
 for(var section in structure){
+
+if(sectionState[section]===false){
 win.document.write("<h3>"+section+"</h3>");
+win.document.write("<p><em>Vom Nutzer deaktiviert – nicht in Score berücksichtigt</em></p>");
+continue;
+}
+
+win.document.write("<h3>"+section+"</h3>");
+
 structure[section].forEach(function(task){
 var id=section+"_"+task;
 var entry=state[id];
@@ -263,6 +548,8 @@ win.document.write("<div style='margin-top:50px;'>_________________________<br>M
 win.document.write("<script>window.onload=function(){window.print();};<\/script>");
 win.document.write("</body></html>");
 win.document.close();
+
+resetAfterExport();
 }
 
 /* SERVICE WORKER */
