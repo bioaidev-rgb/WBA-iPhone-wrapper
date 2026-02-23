@@ -3,357 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vertriebs Check 01–08</title>
+<title>FFF – Flamingo Feedback</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e20074">
 
 <style>
 :root{
 --magenta:#e20074;
---bg:#f4f5f7;
---card:#ffffff;
---text:#111;
---muted:#777;
---warn:#ff9500;
 }
 *{box-sizing:border-box;}
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-background:var(--bg);
-color:var(--text);
+background:black;
+overflow-x:hidden;
 }
-header{
-background:var(--magenta);
-color:white;
-padding:20px 16px;
-position:sticky;
-top:0;
-z-index:10;
+
+/* SPLASH */
+#splash{
+position:fixed;
+inset:0;
+background:black;
 display:flex;
-justify-content:center;
 align-items:center;
+justify-content:center;
+z-index:9999;
 }
-.score{
-font-size:28px;
+#splash img{
+max-width:80%;
+height:auto;
+}
+
+/* HERO */
+.hero{
+height:45vh;
+min-height:260px;
+max-height:420px;
+background:black;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+}
+.hero img{
+width:100%;
+height:100%;
+object-fit:contain;
+}
+
+/* FORMULAR */
+.main{
+background:var(--magenta);
+border-radius:32px 32px 0 0;
+margin-top:-28px;
+padding-top:24px;
+min-height:100vh;
+}
+.header{
+text-align:center;
+color:white;
+font-size:24px;
 font-weight:600;
+padding:12px 16px;
 }
-.warnIcon{
-position:absolute;
-right:16px;
-font-size:22px;
-display:none;
-cursor:pointer;
-}
-.container{padding:12px;}
-.sectionTitle{
-margin:22px 0 8px;
-font-size:14px;
-color:var(--muted);
+.container{
+padding:16px;
+max-width:720px;
+margin:auto;
 }
 .card{
-background:var(--card);
-padding:14px;
-border-radius:14px;
-margin-bottom:10px;
-box-shadow:0 1px 3px rgba(0,0,0,0.05);
+background:white;
+border-radius:16px;
+padding:16px;
+margin-bottom:16px;
 }
-.task{font-size:14px;margin-bottom:8px;}
-.stars{display:flex;gap:10px;}
+.task{
+font-size:15px;
+margin-bottom:10px;
+}
+.stars{
+display:flex;
+gap:10px;
+}
 .star{
 font-size:30px;
 color:#ccc;
 cursor:pointer;
-transition:transform 0.1s ease;
 }
-.star.active{color:var(--magenta);}
-.star:active{transform:scale(1.2);}
-.noteToggle{
-margin-top:8px;
-font-size:13px;
-color:var(--muted);
-cursor:pointer;
+.star.active{
+color:var(--magenta);
 }
-.noteField{
-margin-top:8px;
-display:none;
-}
-.noteField.open{display:block;}
-.noteField textarea{
+textarea{
 width:100%;
-padding:8px;
-border-radius:8px;
+margin-top:12px;
+padding:10px;
+border-radius:10px;
 border:1px solid #ddd;
-font-size:14px;
 resize:none;
+font-size:14px;
 }
 .footer{
 position:sticky;
 bottom:0;
 background:white;
-padding:12px;
+padding:14px;
 border-top:1px solid #ddd;
 }
 button{
 width:100%;
 padding:14px;
 border:none;
-border-radius:12px;
+border-radius:14px;
 background:var(--magenta);
 color:white;
 font-weight:600;
 font-size:16px;
-}
-.sheet{
-position:fixed;
-bottom:-100%;
-left:0;
-right:0;
-background:white;
-border-radius:20px 20px 0 0;
-padding:20px;
-transition:0.3s;
-box-shadow:0 -5px 20px rgba(0,0,0,0.2);
-max-height:70%;
-overflow:auto;
-}
-.sheet.open{bottom:0;}
-.sheet h3{margin-top:0;}
-.sheetItem{margin-bottom:10px;font-size:14px;}
-.closeBtn{
-position:absolute;
-right:16px;
-top:10px;
-cursor:pointer;
-font-size:18px;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-<div class="score" id="scoreDisplay">–</div>
-<div class="warnIcon" id="warnIcon">⚠️</div>
-</header>
-
-<div class="container" id="app"></div>
-
-<div class="footer">
-<button onclick="exportTXT()">Export als TXT</button>
+<div id="splash">
+    <img src="splash.png" alt="Splash">
 </div>
 
-<div class="sheet" id="sheet">
-<div class="closeBtn" onclick="closeSheet()">✕</div>
-<h3>Baustellen (&lt;70%)</h3>
-<div id="sheetContent"></div>
+<section class="hero">
+    <img src="taktikboard.jpg" alt="Taktikboard">
+</section>
+
+<section class="main">
+    <div class="header">Flamingo Feedback</div>
+    <div class="container">
+
+        <div class="card">
+            <div class="task">Einstieg & Begrüßung</div>
+            <div class="stars"></div>
+            <textarea rows="3" placeholder="Anmerkung (optional)"></textarea>
+        </div>
+
+    </div>
+</section>
+
+<div class="footer">
+    <button>Export</button>
 </div>
 
 <script>
+setTimeout(()=>{
+document.getElementById("splash").remove();
+},1000);
 
-/* ============================= */
-/* SINGLE SOURCE OF TRUTH STATE */
-/* ============================= */
-
-let state = JSON.parse(localStorage.getItem("vertriebs_state")) || {};
-
-const structure = {
-"01 CHECK-IN":[
-"Kunden wahrnehmen","Auf Kunden zugehen","Freundlich begrüßen",
-"Wohlfühl-Atmosphäre","Gut aufgehoben Gefühl",
-"Getränke anbieten","Smalltalk führen","DWM nutzen",
-"Kunden im DWM anlegen","Erscheinungsbild",
-"Auftreten","Shopauftritt"
-],
-"02 BEDARFS- & UMFELDANALYSE":[
-"Fokus auf Kunden","Keine Systemnutzung","10 Infos",
-"Infos übertragen","Anliegen","Wünsche",
-"Bedürfnisse","PK/GK","Kaufmotive",
-"Bedarf","Umfeld","Bestand",
-"Gesprächsnotiz","Systemcheck",
-"Bestand vervollständigen","Magenta View",
-"KEK","Glasfaser","Systeme"
-]
-};
-
-/* ============================= */
-/* RENDER */
-/* ============================= */
-
-function render(){
-const app=document.getElementById("app");
-app.innerHTML="";
-
-Object.entries(structure).forEach(([section,tasks])=>{
-const title=document.createElement("div");
-title.className="sectionTitle";
-title.innerText=section;
-app.appendChild(title);
-
-tasks.forEach(task=>{
-const id=section+"_"+task;
-const entry=state[id] || {rating:0,note:""};
-
-const card=document.createElement("div");
-card.className="card";
-card.innerHTML=`<div class="task">${task}</div>`;
-
-const stars=document.createElement("div");
-stars.className="stars";
-
+document.querySelectorAll(".stars").forEach(container=>{
 for(let i=1;i<=5;i++){
-const s=document.createElement("div");
-s.className="star"+(i<=entry.rating?" active":"");
-s.innerHTML="★";
-s.onclick=()=>{
-if(!state[id]) state[id]={rating:0,note:""};
-state[id].rating=i;
-save();
+const star=document.createElement("div");
+star.className="star";
+star.innerHTML="★";
+star.onclick=()=>{
+Array.from(container.children).forEach((s,index)=>{
+s.classList.toggle("active",index<i);
+});
 };
-stars.appendChild(s);
-}
-
-card.appendChild(stars);
-
-// Note Toggle
-const toggle=document.createElement("div");
-toggle.className="noteToggle";
-toggle.innerText="＋ Notiz";
-card.appendChild(toggle);
-
-const noteField=document.createElement("div");
-noteField.className="noteField";
-noteField.innerHTML=`<textarea rows="3" placeholder="Notiz eingeben...">${entry.note || ""}</textarea>`;
-card.appendChild(noteField);
-
-toggle.onclick=()=>noteField.classList.toggle("open");
-
-noteField.querySelector("textarea").oninput=(e)=>{
-if(!state[id]) state[id]={rating:0,note:""};
-state[id].note=e.target.value;
-save(false);
-};
-
-app.appendChild(card);
-});
-});
-
-calculate();
-}
-
-/* ============================= */
-/* SAVE */
-/* ============================= */
-
-function save(reRender=true){
-localStorage.setItem("vertriebs_state",JSON.stringify(state));
-if(reRender) render();
-}
-
-/* ============================= */
-/* SCORE & ISSUES */
-/* ============================= */
-
-function calculate(){
-let total=0;
-let count=0;
-let issues=[];
-
-Object.entries(structure).forEach(([section,tasks])=>{
-tasks.forEach(task=>{
-const id=section+"_"+task;
-const rating=state[id]?.rating || 0;
-
-if(rating>0){
-total+=rating;
-count++;
-
-if((rating/5)<0.7){
-issues.push({
-task,
-percent:(rating/5*100)
-});
-}
+container.appendChild(star);
 }
 });
-});
 
-const scoreEl=document.getElementById("scoreDisplay");
-
-if(count===0){
-scoreEl.innerText="–";
-}else{
-const percent=(total/(count*5))*100;
-scoreEl.innerText=percent.toFixed(1)+"%";
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
 }
-
-const warn=document.getElementById("warnIcon");
-
-if(issues.length>0){
-warn.style.display="block";
-warn.onclick=()=>openSheet(
-issues.sort((a,b)=>a.percent-b.percent).slice(0,5)
-);
-}else{
-warn.style.display="none";
-}
-}
-
-/* ============================= */
-/* OVERLAY */
-/* ============================= */
-
-function openSheet(list){
-const sheet=document.getElementById("sheet");
-const content=document.getElementById("sheetContent");
-content.innerHTML="";
-list.forEach(i=>{
-content.innerHTML+=`<div class="sheetItem">${i.task} – ${i.percent.toFixed(0)}%</div>`;
-});
-sheet.classList.add("open");
-}
-
-function closeSheet(){
-document.getElementById("sheet").classList.remove("open");
-}
-
-/* ============================= */
-/* EXPORT */
-/* ============================= */
-
-function exportTXT(){
-let text="Vertriebs Check 01–08\n\n";
-
-Object.entries(structure).forEach(([section,tasks])=>{
-text+=section+"\n";
-tasks.forEach(task=>{
-const id=section+"_"+task;
-const entry=state[id];
-
-if(!entry || entry.rating===0){
-text+=`- ${task}: Nicht bewertet\n`;
-}else{
-text+=`- ${task}: ${entry.rating}/5\n`;
-}
-
-if(entry?.note){
-text+=`  Notiz: ${entry.note}\n`;
-}
-});
-text+="\n";
-});
-
-text+=`Gesamt-Score (nur bewertete Punkte): ${document.getElementById("scoreDisplay").innerText}\n`;
-
-const blob=new Blob([text],{type:"text/plain"});
-const link=document.createElement("a");
-link.href=URL.createObjectURL(blob);
-link.download="vertriebs_export.txt";
-link.click();
-}
-
-/* ============================= */
-
-render();
-
 </script>
 
 </body>
