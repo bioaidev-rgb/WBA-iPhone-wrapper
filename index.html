@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vertriebs Check</title>
+<title>Vertriebs Check 01–08</title>
+
 <style>
 :root{
 --magenta:#e20074;
@@ -13,10 +14,12 @@
 --muted:#777;
 --warn:#ff9500;
 }
+*{box-sizing:border-box;}
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
 background:var(--bg);
+color:var(--text);
 }
 header{
 background:var(--magenta);
@@ -42,24 +45,46 @@ cursor:pointer;
 }
 .container{padding:12px;}
 .sectionTitle{
-margin:20px 0 8px;
+margin:22px 0 8px;
 font-size:14px;
 color:var(--muted);
 }
 .card{
 background:var(--card);
-padding:12px;
-border-radius:12px;
-margin-bottom:8px;
+padding:14px;
+border-radius:14px;
+margin-bottom:10px;
+box-shadow:0 1px 3px rgba(0,0,0,0.05);
 }
-.task{font-size:14px;margin-bottom:6px;}
-.stars{display:flex;gap:8px;}
+.task{font-size:14px;margin-bottom:8px;}
+.stars{display:flex;gap:10px;}
 .star{
-font-size:22px;
+font-size:30px;
 color:#ccc;
 cursor:pointer;
+transition:transform 0.1s ease;
 }
 .star.active{color:var(--magenta);}
+.star:active{transform:scale(1.2);}
+.noteToggle{
+margin-top:8px;
+font-size:13px;
+color:var(--muted);
+cursor:pointer;
+}
+.noteField{
+margin-top:8px;
+display:none;
+}
+.noteField.open{display:block;}
+.noteField textarea{
+width:100%;
+padding:8px;
+border-radius:8px;
+border:1px solid #ddd;
+font-size:14px;
+resize:none;
+}
 .footer{
 position:sticky;
 bottom:0;
@@ -69,9 +94,9 @@ border-top:1px solid #ddd;
 }
 button{
 width:100%;
-padding:12px;
+padding:14px;
 border:none;
-border-radius:10px;
+border-radius:12px;
 background:var(--magenta);
 color:white;
 font-weight:600;
@@ -92,7 +117,7 @@ overflow:auto;
 }
 .sheet.open{bottom:0;}
 .sheet h3{margin-top:0;}
-.sheetItem{margin-bottom:8px;font-size:14px;}
+.sheetItem{margin-bottom:10px;font-size:14px;}
 .closeBtn{
 position:absolute;
 right:16px;
@@ -102,6 +127,7 @@ font-size:18px;
 }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -122,6 +148,13 @@ font-size:18px;
 </div>
 
 <script>
+
+/* ============================= */
+/* SINGLE SOURCE OF TRUTH STATE */
+/* ============================= */
+
+let state = JSON.parse(localStorage.getItem("vertriebs_state")) || {};
+
 const structure = {
 "01 CHECK-IN":[
 "Kunden wahrnehmen","Auf Kunden zugehen","Freundlich begrüßen",
@@ -130,7 +163,7 @@ const structure = {
 "Kunden im DWM anlegen","Erscheinungsbild",
 "Auftreten","Shopauftritt"
 ],
-"02 BEDARFS":[
+"02 BEDARFS- & UMFELDANALYSE":[
 "Fokus auf Kunden","Keine Systemnutzung","10 Infos",
 "Infos übertragen","Anliegen","Wünsche",
 "Bedürfnisse","PK/GK","Kaufmotive",
@@ -141,12 +174,14 @@ const structure = {
 ]
 };
 
-let scores = JSON.parse(localStorage.getItem("scores"))||{};
-
-const app=document.getElementById("app");
+/* ============================= */
+/* RENDER */
+/* ============================= */
 
 function render(){
+const app=document.getElementById("app");
 app.innerHTML="";
+
 Object.entries(structure).forEach(([section,tasks])=>{
 const title=document.createElement("div");
 title.className="sectionTitle";
@@ -154,34 +189,68 @@ title.innerText=section;
 app.appendChild(title);
 
 tasks.forEach(task=>{
+const id=section+"_"+task;
+const entry=state[id] || {rating:0,note:""};
+
 const card=document.createElement("div");
 card.className="card";
-const id=section+"_"+task;
-const val=scores[id]||0;
-
 card.innerHTML=`<div class="task">${task}</div>`;
+
 const stars=document.createElement("div");
 stars.className="stars";
 
 for(let i=1;i<=5;i++){
 const s=document.createElement("div");
-s.className="star"+(i<=val?" active":"");
+s.className="star"+(i<=entry.rating?" active":"");
 s.innerHTML="★";
 s.onclick=()=>{
-scores[id]=i;
-localStorage.setItem("scores",JSON.stringify(scores));
-render();
-calculate();
+if(!state[id]) state[id]={rating:0,note:""};
+state[id].rating=i;
+save();
 };
 stars.appendChild(s);
 }
 
 card.appendChild(stars);
+
+// Note Toggle
+const toggle=document.createElement("div");
+toggle.className="noteToggle";
+toggle.innerText="＋ Notiz";
+card.appendChild(toggle);
+
+const noteField=document.createElement("div");
+noteField.className="noteField";
+noteField.innerHTML=`<textarea rows="3" placeholder="Notiz eingeben...">${entry.note || ""}</textarea>`;
+card.appendChild(noteField);
+
+toggle.onclick=()=>noteField.classList.toggle("open");
+
+noteField.querySelector("textarea").oninput=(e)=>{
+if(!state[id]) state[id]={rating:0,note:""};
+state[id].note=e.target.value;
+save(false);
+};
+
 app.appendChild(card);
 });
 });
+
 calculate();
 }
+
+/* ============================= */
+/* SAVE */
+/* ============================= */
+
+function save(reRender=true){
+localStorage.setItem("vertriebs_state",JSON.stringify(state));
+if(reRender) render();
+}
+
+/* ============================= */
+/* SCORE & ISSUES */
+/* ============================= */
 
 function calculate(){
 let total=0;
@@ -191,18 +260,24 @@ let issues=[];
 Object.entries(structure).forEach(([section,tasks])=>{
 tasks.forEach(task=>{
 const id=section+"_"+task;
-const val=scores[id]||0;
-if(val>0){
-total+=val;
+const rating=state[id]?.rating || 0;
+
+if(rating>0){
+total+=rating;
 count++;
-if((val/5)<0.7){
-issues.push({task,percent:(val/5*100)});
+
+if((rating/5)<0.7){
+issues.push({
+task,
+percent:(rating/5*100)
+});
 }
 }
 });
 });
 
 const scoreEl=document.getElementById("scoreDisplay");
+
 if(count===0){
 scoreEl.innerText="–";
 }else{
@@ -211,19 +286,26 @@ scoreEl.innerText=percent.toFixed(1)+"%";
 }
 
 const warn=document.getElementById("warnIcon");
+
 if(issues.length>0){
 warn.style.display="block";
-warn.onclick=()=>openSheet(issues.sort((a,b)=>a.percent-b.percent).slice(0,5));
+warn.onclick=()=>openSheet(
+issues.sort((a,b)=>a.percent-b.percent).slice(0,5)
+);
 }else{
 warn.style.display="none";
 }
 }
 
-function openSheet(issues){
+/* ============================= */
+/* OVERLAY */
+/* ============================= */
+
+function openSheet(list){
 const sheet=document.getElementById("sheet");
 const content=document.getElementById("sheetContent");
 content.innerHTML="";
-issues.forEach(i=>{
+list.forEach(i=>{
 content.innerHTML+=`<div class="sheetItem">${i.task} – ${i.percent.toFixed(0)}%</div>`;
 });
 sheet.classList.add("open");
@@ -233,22 +315,33 @@ function closeSheet(){
 document.getElementById("sheet").classList.remove("open");
 }
 
+/* ============================= */
+/* EXPORT */
+/* ============================= */
+
 function exportTXT(){
-let text="Vertriebs Check\n\n";
+let text="Vertriebs Check 01–08\n\n";
+
 Object.entries(structure).forEach(([section,tasks])=>{
 text+=section+"\n";
 tasks.forEach(task=>{
 const id=section+"_"+task;
-const val=scores[id]||0;
-if(val===0){
+const entry=state[id];
+
+if(!entry || entry.rating===0){
 text+=`- ${task}: Nicht bewertet\n`;
 }else{
-text+=`- ${task}: ${val}/5\n`;
+text+=`- ${task}: ${entry.rating}/5\n`;
+}
+
+if(entry?.note){
+text+=`  Notiz: ${entry.note}\n`;
 }
 });
 text+="\n";
 });
-text+=`Gesamt: ${document.getElementById("scoreDisplay").innerText}\n`;
+
+text+=`Gesamt-Score (nur bewertete Punkte): ${document.getElementById("scoreDisplay").innerText}\n`;
 
 const blob=new Blob([text],{type:"text/plain"});
 const link=document.createElement("a");
@@ -257,7 +350,11 @@ link.download="vertriebs_export.txt";
 link.click();
 }
 
+/* ============================= */
+
 render();
+
 </script>
+
 </body>
 </html>
