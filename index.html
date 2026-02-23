@@ -4,197 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FFF – Flamingo Feedback</title>
-
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#e20074">
 
 <style>
-:root{
---magenta:#e20074;
---black:#000;
---card:#ffffff;
---muted:#777;
---warn:#ff9500;
-}
+:root{--magenta:#e20074;--muted:#777;}
 *{box-sizing:border-box;}
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-background:black;
-overflow-x:hidden;
-}
-#splash{
-position:fixed;
-inset:0;
-background:black;
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:9999;
-}
-#splash img{
-max-width:80%;
-height:auto;
-}
-.hero{
-height:45vh;
-min-height:260px;
-max-height:420px;
-background:black;
-display:flex;
-align-items:center;
-justify-content:center;
-overflow:hidden;
-}
-.hero img{
-width:100%;
-height:100%;
-object-fit:contain;
-}
-.main{
-background:var(--magenta);
-border-radius:36px 36px 0 0;
-margin-top:-30px;
-padding-top:20px;
-min-height:100vh;
-}
-.header{
-position:sticky;
-top:0;
-background:var(--magenta);
-padding:12px 16px;
-text-align:center;
-color:white;
-font-size:26px;
-font-weight:600;
-z-index:5;
-}
-.warnIcon{
-position:absolute;
-right:18px;
-top:18px;
-font-size:22px;
-display:none;
-cursor:pointer;
-}
-.container{
-max-width:720px;
-margin:auto;
-padding:16px;
-}
-.sectionTitle{
-color:white;
-margin:24px 0 12px;
-font-weight:600;
-font-size:15px;
-}
-.card{
-background:white;
-border-radius:16px;
-padding:16px;
-margin-bottom:16px;
-}
-.task{
-font-size:14px;
-margin-bottom:8px;
-}
-.stars{
-display:flex;
-gap:10px;
-}
-.star{
-font-size:30px;
-color:#ccc;
-cursor:pointer;
-}
-.star.active{
-color:var(--magenta);
-}
-.noteToggle{
-margin-top:8px;
-font-size:13px;
-color:var(--muted);
-cursor:pointer;
-}
-.noteField{
-display:none;
-margin-top:8px;
-}
-.noteField.open{
-display:block;
-}
-.noteField textarea{
-width:100%;
-padding:8px;
-border-radius:10px;
-border:1px solid #ddd;
-resize:none;
-}
-.footer{
-position:sticky;
-bottom:0;
-background:white;
-padding:14px;
-border-top:1px solid #ddd;
-display:flex;
-gap:10px;
-}
-button{
-flex:1;
-padding:14px;
-border:none;
-border-radius:14px;
-background:var(--magenta);
-color:white;
-font-weight:600;
-font-size:16px;
-cursor:pointer;
-}
-.sheet{
-position:fixed;
-bottom:-100%;
-left:0;
-right:0;
-background:white;
-border-radius:24px 24px 0 0;
-padding:24px;
-transition:0.3s;
-box-shadow:0 -5px 20px rgba(0,0,0,0.2);
-max-height:70%;
-overflow:auto;
-z-index:20;
-}
-.sheet.open{ bottom:0; }
-.sheet h3{ margin-top:0; }
-.closeBtn{
-position:absolute;
-right:20px;
-top:16px;
-font-size:18px;
-cursor:pointer;
-}
-.sheetItem{ margin-bottom:10px; }
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;background:black;overflow-x:hidden;}
+
+#splash{position:fixed;inset:0;background:black;display:flex;align-items:center;justify-content:center;z-index:9999;}
+#splash img{max-width:80%;}
+
+.hero{height:45vh;min-height:260px;max-height:420px;background:black;display:flex;align-items:center;justify-content:center;}
+.hero img{width:100%;height:100%;object-fit:contain;}
+
+.main{background:var(--magenta);border-radius:36px 36px 0 0;margin-top:-30px;padding-top:20px;min-height:100vh;}
+.header{position:sticky;top:0;background:var(--magenta);padding:12px;text-align:center;color:white;font-size:26px;font-weight:600;}
+.warnIcon{position:absolute;right:18px;top:18px;font-size:22px;display:none;cursor:pointer;}
+
+.container{max-width:720px;margin:auto;padding:16px;}
+.sectionTitle{color:white;margin:24px 0 12px;font-weight:600;font-size:15px;}
+.card{background:white;border-radius:16px;padding:16px;margin-bottom:16px;}
+.task{font-size:14px;margin-bottom:8px;}
+.stars{display:flex;gap:10px;}
+.star{font-size:30px;color:#ccc;cursor:pointer;}
+.star.active{color:var(--magenta);}
+
+.noteToggle{margin-top:8px;font-size:13px;color:var(--muted);cursor:pointer;}
+.noteField{display:none;margin-top:8px;}
+.noteField.open{display:block;}
+.noteField textarea{width:100%;padding:8px;border-radius:10px;border:1px solid #ddd;resize:none;}
+
+.footer{position:sticky;bottom:0;background:white;padding:14px;border-top:1px solid #ddd;display:flex;gap:10px;}
+button{flex:1;padding:14px;border:none;border-radius:14px;background:var(--magenta);color:white;font-weight:600;font-size:16px;cursor:pointer;}
+
+.sheet{position:fixed;bottom:-100%;left:0;right:0;background:white;border-radius:24px 24px 0 0;padding:24px;transition:0.3s;box-shadow:0 -5px 20px rgba(0,0,0,0.2);max-height:70%;overflow:auto;}
+.sheet.open{bottom:0;}
 </style>
 </head>
+
 <body>
 
-<div id="splash">
-<img src="splash.png" alt="Splash">
-</div>
-
-<section class="hero">
-<img src="taktikboard.jpg" alt="Taktikboard">
-</section>
+<div id="splash"><img src="splash.png"></div>
+<section class="hero"><img src="taktikboard.jpg"></section>
 
 <section class="main">
-
 <div class="header">
 <span id="scoreDisplay">–</span>
 <span class="warnIcon" id="warnIcon">⚠️</span>
 </div>
-
 <div class="container" id="app"></div>
-
 </section>
 
 <div class="footer">
@@ -203,268 +62,216 @@ cursor:pointer;
 </div>
 
 <div class="sheet" id="sheet">
-<div class="closeBtn" onclick="closeSheet()">✕</div>
 <h3>Baustellen (&lt;70%)</h3>
 <div id="sheetContent"></div>
 </div>
 
 <script>
-setTimeout(()=>{
+
+/* SPLASH */
+setTimeout(function(){
 document.getElementById("splash").remove();
 window.scrollTo(0,0);
 },2000);
 
-let state = JSON.parse(localStorage.getItem("vertriebs_state")) || {};
+/* STATE */
+var state = JSON.parse(localStorage.getItem("vertriebs_state")) || {};
 
-const structure = {
-"01 CHECK-IN":[
-"Kunden wahrnehmen","Auf Kunden zugehen","Freundlich begrüßen",
-"Wohlfühl-Atmosphäre schaffen","Gut aufgehoben Gefühl schaffen",
-"Getränke anbieten","Smalltalk führen","Digitales Welcome nutzen",
-"Kunden im DWM anlegen","Erscheinungsbild",
-"Auftreten","Shopauftritt"
-],
-"02 BEDARFS- & UMFELDANALYSE":[
-"Fokus auf Kunden","Keine Systemnutzung","10 Informationen erfassen",
-"Infos übertragen","Anliegen aufnehmen","Wünsche erfragen",
-"Bedürfnisse erfragen","PK/GK identifizieren","Kaufmotive erkennen",
-"Bedarf","Umfeld","Bestand",
-"Gesprächsnotiz","Systemcheck",
-"Bestand vervollständigen","Magenta View",
-"KEK aktualisieren","Glasfaser prüfen","Systeme beherrschen"
-]
+/* STRUCTURE 01–08 */
+var structure = {
+"01 CHECK-IN":["Kunden wahrnehmen","Auf Kunden zugehen","Freundlich begrüßen","Wohlfühl-Atmosphäre schaffen","Gut aufgehoben Gefühl schaffen","Getränke anbieten","Smalltalk führen","Digitales Welcome nutzen","Kunden im DWM anlegen","Erscheinungsbild","Auftreten","Shopauftritt"],
+"02 BEDARFS- & UMFELDANALYSE":["Fokus auf Kunden","Keine Systemnutzung","10 Informationen erfassen","Infos übertragen","Anliegen aufnehmen","Wünsche erfragen","Bedürfnisse erfragen","PK/GK identifizieren","Kaufmotive erkennen","Bedarf","Umfeld","Bestand","Gesprächsnotiz","Systemcheck","Bestand vervollständigen","Magenta View","KEK aktualisieren","Glasfaser prüfen","Systeme beherrschen"],
+"03 LÖSUNG ERARBEITEN":["Infos zusammenfassen","Bildabgleich","JA einholen","Weitere Wünsche","Cross-Selling","Upselling","Versteckte Bedarfe","Geduld erbitten","Experten einbinden"],
+"04 LÖSUNG VORSTELLEN":["Lösung ohne Preis","Lösung skizzieren","Nutzen hervorheben","Shop live nutzen","Shop digital nutzen","Erlebbar machen","Finaler Bildabgleich","Weitere JA"],
+"05 ANGEBOT VORSTELLEN":["Ins Angebotstool","Aktionen nutzen","Angebot mit Preisen"],
+"06 EINWANDBEHANDLUNG":["Einwände unterscheiden","Nonverbal beachten","Einwände annehmen","Einwandmethoden"],
+"07 ABSCHLUSS & BUCHEN":["Alternativfragen","Abschlussfrage","Stille aushalten","Buchen","Qualitätsstandards"],
+"08 KUNDENBINDUNG":["Bestärken","Folgekontakte","Kundenzuführung","BKM","OTV","Leads","POM","Weiterempfehlung","Feedback erklären","SMS","Anruf","Verabschieden","Zur Tür begleiten"]
 };
 
+/* SSOT METRICS */
 function computeMetrics(){
-let total=0;
-let count=0;
-let issues=[];
-
-Object.entries(structure).forEach(([section,tasks])=>{
-tasks.forEach(task=>{
-const id=section+"_"+task;
-const rating=state[id]?.rating || 0;
-
+var total=0,count=0,issues=[];
+for(var section in structure){
+structure[section].forEach(function(task){
+var id=section+"_"+task;
+var rating=state[id]?state[id].rating:0;
 if(rating>0){
-total+=rating;
-count++;
-if((rating/5)<0.7){
-issues.push({
-task,
-percent:(rating/5*100)
-});
-}
+total+=rating;count++;
+if((rating/5)<0.7){issues.push({task:task,percent:(rating/5*100)});}
 }
 });
-});
-
-let score = count===0 ? "-" : ((total/(count*5))*100).toFixed(1)+"%";
-issues.sort((a,b)=>a.percent-b.percent);
-
-return { score, count, total, issues };
+}
+var score=count===0?"-":((total/(count*5))*100).toFixed(1)+"%";
+issues.sort(function(a,b){return a.percent-b.percent;});
+return {score:score,issues:issues};
 }
 
+/* RENDER */
 function render(){
-const app=document.getElementById("app");
+var app=document.getElementById("app");
 app.innerHTML="";
-
-Object.entries(structure).forEach(([section,tasks])=>{
-const title=document.createElement("div");
+for(var section in structure){
+var title=document.createElement("div");
 title.className="sectionTitle";
 title.innerText=section;
 app.appendChild(title);
 
-tasks.forEach(task=>{
-const id=section+"_"+task;
-const entry=state[id] || {rating:0,note:""};
+structure[section].forEach(function(task){
+var id=section+"_"+task;
+var entry=state[id]||{rating:0,note:""};
 
-const card=document.createElement("div");
+var card=document.createElement("div");
 card.className="card";
-card.innerHTML=`<div class="task">${task}</div>`;
+card.innerHTML="<div class='task'>"+task+"</div>";
 
-const stars=document.createElement("div");
+var stars=document.createElement("div");
 stars.className="stars";
 
-for(let i=1;i<=5;i++){
-const s=document.createElement("div");
+for(var i=1;i<=5;i++){
+(function(i){
+var s=document.createElement("div");
 s.className="star"+(i<=entry.rating?" active":"");
 s.innerHTML="★";
-s.onclick=()=>{
-if(!state[id]) state[id]={rating:0,note:""};
+s.onclick=function(){
+if(!state[id])state[id]={rating:0,note:""};
 state[id].rating=i;
 save();
 };
 stars.appendChild(s);
+})(i);
 }
 
 card.appendChild(stars);
 
-const toggle=document.createElement("div");
+var toggle=document.createElement("div");
 toggle.className="noteToggle";
 toggle.innerText="＋ Notiz";
 card.appendChild(toggle);
 
-const noteField=document.createElement("div");
+var noteField=document.createElement("div");
 noteField.className="noteField";
-noteField.innerHTML=`<textarea rows="3">${entry.note || ""}</textarea>`;
+noteField.innerHTML="<textarea rows='3'>"+(entry.note||"")+"</textarea>";
 card.appendChild(noteField);
 
-toggle.onclick=()=>noteField.classList.toggle("open");
+toggle.onclick=function(){noteField.classList.toggle("open");};
 
-noteField.querySelector("textarea").oninput=(e)=>{
-if(!state[id]) state[id]={rating:0,note:""};
+noteField.querySelector("textarea").oninput=function(e){
+if(!state[id])state[id]={rating:0,note:""};
 state[id].note=e.target.value;
-save(false);
+localStorage.setItem("vertriebs_state",JSON.stringify(state));
 };
 
 app.appendChild(card);
 });
-});
-
+}
 updateUI();
 }
 
+/* UPDATE */
 function updateUI(){
-const {score, issues} = computeMetrics();
+var m=computeMetrics();
+document.getElementById("scoreDisplay").innerText=m.score;
 
-document.getElementById("scoreDisplay").innerText = score;
-
-const warn=document.getElementById("warnIcon");
-if(issues.length>0){
+var warn=document.getElementById("warnIcon");
+if(m.issues.length>0){
 warn.style.display="inline";
-warn.onclick=()=>openSheet(issues.slice(0,5));
+warn.onclick=function(){
+var sheet=document.getElementById("sheet");
+var content=document.getElementById("sheetContent");
+content.innerHTML="";
+m.issues.slice(0,5).forEach(function(i){
+content.innerHTML+="<div>"+i.task+" – "+i.percent.toFixed(0)+"%</div>";
+});
+sheet.classList.add("open");
+};
 }else{
 warn.style.display="none";
 }
 }
 
-function save(reRender=true){
+/* SAVE */
+function save(){
 localStorage.setItem("vertriebs_state",JSON.stringify(state));
-if(reRender) render();
-else updateUI();
+render();
 }
 
-function openSheet(list){
-const sheet=document.getElementById("sheet");
-const content=document.getElementById("sheetContent");
-content.innerHTML="";
-list.forEach(i=>{
-content.innerHTML+=`<div class="sheetItem">${i.task} – ${i.percent.toFixed(0)}%</div>`;
-});
-sheet.classList.add("open");
-}
-
-function closeSheet(){
-document.getElementById("sheet").classList.remove("open");
-}
-
+/* TXT EXPORT */
 function exportTXT(){
-const {score} = computeMetrics();
-let text="Vertriebs Check\n\n";
-
-Object.entries(structure).forEach(([section,tasks])=>{
-text+=section+"\n";
-tasks.forEach(task=>{
-const id=section+"_"+task;
-const entry=state[id];
-
-if(!entry || entry.rating===0){
-text+=`- ${task}: Nicht bewertet\n`;
-}else{
-text+=`- ${task}: ${entry.rating}/5\n`;
-}
-if(entry?.note){
-text+=`  Notiz: ${entry.note}\n`;
-}
+var m=computeMetrics();
+var text="Vertriebs Check\\n\\n";
+for(var section in structure){
+text+=section+"\\n";
+structure[section].forEach(function(task){
+var id=section+"_"+task;
+var entry=state[id];
+if(!entry||entry.rating===0){text+="- "+task+": Nicht bewertet\\n";}
+else{text+="- "+task+": "+entry.rating+"/5\\n";}
+if(entry&&entry.note){text+="  Notiz: "+entry.note+"\\n";}
 });
-text+="\n";
-});
-
-text+=`Gesamt-Score: ${score}\n`;
-
-const blob=new Blob([text],{type:"text/plain"});
-const link=document.createElement("a");
+text+="\\n";
+}
+text+="Gesamt-Score: "+m.score+"\\n";
+var blob=new Blob([text],{type:"text/plain"});
+var link=document.createElement("a");
 link.href=URL.createObjectURL(blob);
 link.download="vertriebs_export.txt";
 link.click();
 }
 
+/* PDF EXPORT */
 function exportPDF(){
-const {score, issues} = computeMetrics();
-let now = new Date();
-let timestamp = now.toLocaleString();
+var m=computeMetrics();
+var now=new Date().toLocaleString();
+var win=window.open("","_blank");
 
-let detailHTML="";
-Object.entries(structure).forEach(([section,tasks])=>{
-detailHTML += `<h3>${section}</h3>`;
-tasks.forEach(task=>{
-const id=section+"_"+task;
-const entry=state[id];
-if(!entry || entry.rating===0){
-detailHTML += `<p><strong>${task}:</strong> Nicht bewertet</p>`;
+win.document.write("<html><head><title>Report</title>");
+win.document.write("<style>body{font-family:Arial;padding:40px;} .header{background:#e20074;color:white;padding:20px;border-radius:8px;} .kpi{margin-top:20px;padding:15px;background:#f4f4f4;border-left:6px solid #e20074;}</style>");
+win.document.write("</head><body>");
+
+win.document.write("<div class='header'><h2>Flamingo Feedback – Vertriebsreport</h2><p>Datum: "+now+"</p><p>Gesamt-Score: <strong>"+m.score+"</strong></p></div>");
+
+win.document.write("<div class='kpi'><h3>Entwicklungsfelder (&lt;70%)</h3>");
+if(m.issues.length>0){
+win.document.write("<ul>");
+m.issues.slice(0,5).forEach(function(i){
+win.document.write("<li>"+i.task+" – "+i.percent.toFixed(0)+"%</li>");
+});
+win.document.write("</ul>");
 }else{
-detailHTML += `<p><strong>${task}:</strong> ${entry.rating}/5</p>`;
+win.document.write("<p>Keine Entwicklungsfelder unter 70 %</p>");
 }
-if(entry?.note){
-detailHTML += `<p style="margin-left:15px; font-style:italic;">Notiz: ${entry.note}</p>`;
-}
-});
-});
+win.document.write("</div>");
 
-let issuesHTML="";
-if(issues.length>0){
-issuesHTML="<ul>";
-issues.slice(0,5).forEach(i=>{
-issuesHTML+=`<li>${i.task} – ${i.percent.toFixed(0)}%</li>`;
-});
-issuesHTML+="</ul>";
+for(var section in structure){
+win.document.write("<h3>"+section+"</h3>");
+structure[section].forEach(function(task){
+var id=section+"_"+task;
+var entry=state[id];
+if(!entry||entry.rating===0){
+win.document.write("<p><strong>"+task+":</strong> Nicht bewertet</p>");
 }else{
-issuesHTML="<p>Keine Entwicklungsfelder unter 70 %</p>";
+win.document.write("<p><strong>"+task+":</strong> "+entry.rating+"/5</p>");
+}
+if(entry&&entry.note){
+win.document.write("<p style='margin-left:15px;font-style:italic;'>Notiz: "+entry.note+"</p>");
+}
+});
 }
 
-let report=`
-<html>
-<head>
-<title>Vertriebsreport</title>
-<style>
-body{font-family:Arial;padding:40px;}
-.header{background:#e20074;color:white;padding:20px;border-radius:8px;}
-.kpi{margin-top:20px;padding:15px;background:#f4f4f4;border-left:6px solid #e20074;}
-.signature{margin-top:50px;}
-</style>
-</head>
-<body>
-<div class="header">
-<h2>Flamingo Feedback – Vertriebsreport</h2>
-<p>Datum: ${timestamp}</p>
-<p>Gesamt-Score: <strong>${score}</strong></p>
-</div>
-<div class="kpi">
-<h3>Entwicklungsfelder (&lt;70%)</h3>
-${issuesHTML}
-</div>
-${detailHTML}
-<div class="signature">
-<p>_________________________<br>Mitarbeiter</p>
-<br>
-<p>_________________________<br>Coach</p>
-</div>
-<script>window.onload=function(){window.print();}</script>
-</body>
-</html>
-`;
-
-let win=window.open("","_blank");
-win.document.write(report);
+win.document.write("<div style='margin-top:50px;'>_________________________<br>Mitarbeiter<br><br>_________________________<br>Coach</div>");
+win.document.write("<script>window.onload=function(){window.print();};<\/script>");
+win.document.write("</body></html>");
 win.document.close();
 }
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
+/* SERVICE WORKER */
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('./sw.js');
 }
 
 render();
-</script>
 
+</script>
 </body>
 </html>
