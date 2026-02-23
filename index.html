@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FFF – Flamingo Feedback</title>
-<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#E20074">
 
 <style>
@@ -15,71 +14,43 @@
 --muted:#777;
 }
 
-*{box-sizing:border-box;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 background:var(--bg);
 color:white;
-overflow-x:hidden;
-}
-
-/* SPLASH */
-#splash{
-position:fixed;
-inset:0;
-background:black;
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:9999;
-}
-#splash img{max-width:80%;}
-
-/* HERO */
-.hero{
-height:45vh;
-min-height:260px;
-max-height:420px;
-background:black;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-.hero img{
-width:100%;
-height:100%;
-object-fit:contain;
-}
-
-/* MAIN */
-.main{
-background:var(--bg);
-border-radius:36px 36px 0 0;
-margin-top:-30px;
-padding-top:20px;
-min-height:100vh;
 }
 
 /* HEADER */
 .header{
+background:var(--bg);
+border-bottom:3px solid var(--magenta);
+padding:24px 20px 20px 20px;
+text-align:center;
 position:sticky;
 top:0;
-background:var(--bg);
-border-bottom:2px solid var(--magenta);
-padding:16px;
-display:flex;
-justify-content:space-between;
-align-items:center;
 z-index:10;
 }
-#scoreDisplay{
-font-size:42px;
+
+.app-title{
+font-size:28px;
 font-weight:700;
-color:var(--magenta);
+letter-spacing:.5px;
 }
+
+.score-display{
+font-size:48px;
+font-weight:800;
+color:var(--magenta);
+margin-top:6px;
+}
+
 .warnIcon{
+position:absolute;
+right:20px;
+top:30px;
 font-size:22px;
 display:none;
 cursor:pointer;
@@ -102,8 +73,9 @@ margin-bottom:28px;
 box-shadow:0 0 18px rgba(226,0,116,0.15);
 transition:.3s;
 }
+
 .section-wrapper.disabled{
-opacity:0.35;
+opacity:.35;
 border-left-color:#444;
 box-shadow:none;
 }
@@ -112,43 +84,30 @@ box-shadow:none;
 display:flex;
 justify-content:space-between;
 align-items:center;
+margin-bottom:12px;
 font-size:20px;
-margin-bottom:14px;
+font-weight:600;
+}
+
+.toggle-label{
+font-size:12px;
+color:#aaa;
+margin-right:8px;
 }
 
 /* SWITCH */
-.switch{
-position:relative;
-width:44px;
-height:24px;
-}
-.switch input{
-opacity:0;
-width:0;
-height:0;
-}
+.switch{position:relative;width:44px;height:24px;}
+.switch input{opacity:0;width:0;height:0;}
 .slider{
-position:absolute;
-top:0;left:0;right:0;bottom:0;
-background:#555;
-border-radius:24px;
-transition:.3s;
+position:absolute;inset:0;
+background:#555;border-radius:24px;transition:.3s;
 }
 .slider:before{
-position:absolute;
-content:"";
-height:18px;width:18px;
-left:3px;top:3px;
-background:white;
-border-radius:50%;
-transition:.3s;
+content:"";position:absolute;height:18px;width:18px;
+left:3px;top:3px;background:white;border-radius:50%;transition:.3s;
 }
-input:checked + .slider{
-background:var(--magenta);
-}
-input:checked + .slider:before{
-transform:translateX(20px);
-}
+input:checked + .slider{background:var(--magenta);}
+input:checked + .slider:before{transform:translateX(20px);}
 
 /* CARD */
 .card{
@@ -157,42 +116,45 @@ border-radius:10px;
 padding:14px;
 margin-bottom:14px;
 }
-.task{
-font-size:14px;
-margin-bottom:8px;
-}
+
+.task{margin-bottom:8px;font-size:14px;}
+
 .stars{
 display:flex;
-gap:8px;
-}
-.star{
-font-size:34px;
-color:#444;
-cursor:pointer;
-}
-.star.active{
-color:var(--magenta);
+gap:12px;
 }
 
-/* NOTE */
-.noteToggle{
-margin-top:8px;
-font-size:13px;
-color:#aaa;
+.star{
+font-size:38px;
+color:#444;
 cursor:pointer;
+user-select:none;
+transition:.15s;
 }
-.noteField{
+
+.star.active{
+color:var(--magenta);
+transform:scale(1.05);
+}
+
+/* OVERLAY */
+.sheet{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
 display:none;
-margin-top:8px;
+align-items:flex-end;
 }
-.noteField.open{display:block;}
-.noteField textarea{
+
+.sheet.open{display:flex;}
+
+.sheet-inner{
+background:#1c1c22;
 width:100%;
-background:#101015;
-color:white;
-border:1px solid #333;
-border-radius:8px;
-padding:8px;
+border-radius:24px 24px 0 0;
+padding:24px;
+max-height:70%;
+overflow:auto;
 }
 
 /* FOOTER */
@@ -204,9 +166,10 @@ padding:14px;
 display:flex;
 gap:10px;
 }
+
 button{
 flex:1;
-padding:14px;
+padding:16px;
 border:none;
 border-radius:14px;
 background:var(--magenta);
@@ -216,348 +179,236 @@ font-size:16px;
 cursor:pointer;
 }
 
-/* OVERLAY */
-.sheet{
-position:fixed;
-bottom:-100%;
-left:0;right:0;
-background:#1c1c22;
-border-radius:24px 24px 0 0;
-padding:24px;
-transition:.3s;
-max-height:70%;
-overflow:auto;
-}
-.sheet.open{bottom:0;}
-
 /* PRINT */
 @media print{
 body{background:white;color:black;}
+
+.header{
+background:white;
+border:none;
+text-align:left;
+padding:0;
+margin-bottom:20px;
+}
+
+.app-title{color:black;font-size:26px;}
+.score-display{color:#E20074;font-size:34px;}
+
 .section-wrapper{
 background:white;
-border-left:6px solid var(--magenta);
+border-left:6px solid #E20074;
 box-shadow:none;
+opacity:1 !important;
 }
-.section-wrapper.disabled{
-border-left:6px solid #ccc;
-opacity:1;
-}
+
 .section-title{
-border-bottom:2px solid var(--magenta);
-padding-bottom:4px;
+border-bottom:2px solid #E20074;
+padding-bottom:6px;
 }
-#scoreDisplay{
-color:var(--magenta);
-font-size:34px;
-}
+
+.footer,.warnIcon,.sheet{display:none !important;}
 }
 </style>
 </head>
 
 <body>
 
-<div id="splash"><img src="splash.png"></div>
-<section class="hero"><img src="taktikboard.jpg"></section>
-
-<section class="main">
 <div class="header">
-<span>Flamingo Feedback</span>
-<span id="scoreDisplay">–</span>
-<span class="warnIcon" id="warnIcon">⚠️</span>
+<div class="app-title">Flamingo Feedback</div>
+<div class="score-display" id="scoreDisplay">–</div>
+<div class="warnIcon" id="warnIcon">⚠️</div>
 </div>
+
 <div class="container" id="app"></div>
-</section>
 
 <div class="footer">
-<button onclick="exportTXT()">Export TXT</button>
-<button onclick="exportPDF()">Export PDF</button>
+<button id="exportTxtBtn">Export TXT</button>
+<button id="exportPdfBtn">PDF Report</button>
 </div>
 
 <div class="sheet" id="sheet">
-<h3>Baustellen (&lt;70%)</h3>
+<div class="sheet-inner">
+<h3>Entwicklungsfelder (&lt;70%)</h3>
 <div id="sheetContent"></div>
+</div>
 </div>
 
 <script>
 
-/* SPLASH */
-setTimeout(function(){
-document.getElementById("splash").remove();
-window.scrollTo(0,0);
-},2000);
-
 /* STATE */
-var state = JSON.parse(localStorage.getItem("vertriebs_state")) || {};
-var sectionState = JSON.parse(localStorage.getItem("vertriebs_sections")) || {};
+let state = JSON.parse(localStorage.getItem("vertriebs_state")) || {};
+let sectionState = JSON.parse(localStorage.getItem("vertriebs_sections")) || {};
 
 /* STRUCTURE */
-var structure = {
-"01 CHECK-IN":["Kunden wahrnehmen","Auf Kunden zugehen","Freundlich begrüßen","Wohlfühl-Atmosphäre schaffen","Gut aufgehoben Gefühl schaffen","Getränke anbieten","Smalltalk führen","Digitales Welcome nutzen","Kunden im DWM anlegen","Erscheinungsbild","Auftreten","Shopauftritt"],
-"02 BEDARFS- & UMFELDANALYSE":["Fokus auf Kunden","Keine Systemnutzung","10 Informationen erfassen","Infos übertragen","Anliegen aufnehmen","Wünsche erfragen","Bedürfnisse erfragen","PK/GK identifizieren","Kaufmotive erkennen","Bedarf","Umfeld","Bestand","Gesprächsnotiz","Systemcheck","Bestand vervollständigen","Magenta View","KEK aktualisieren","Glasfaser prüfen","Systeme beherrschen"],
-"03 LÖSUNG ERARBEITEN":["Infos zusammenfassen","Bildabgleich","JA einholen","Weitere Wünsche","Cross-Selling","Upselling","Versteckte Bedarfe","Geduld erbitten","Experten einbinden"],
-"04 LÖSUNG VORSTELLEN":["Lösung ohne Preis","Lösung skizzieren","Nutzen hervorheben","Shop live nutzen","Shop digital nutzen","Erlebbar machen","Finaler Bildabgleich","Weitere JA"],
-"05 ANGEBOT VORSTELLEN":["Ins Angebotstool","Aktionen nutzen","Angebot mit Preisen"],
-"06 EINWANDBEHANDLUNG":["Einwände unterscheiden","Nonverbal beachten","Einwände annehmen","Einwandmethoden"],
-"07 ABSCHLUSS & BUCHEN":["Alternativfragen","Abschlussfrage","Stille aushalten","Buchen","Qualitätsstandards"],
-"08 KUNDENBINDUNG":["Bestärken","Folgekontakte","Kundenzuführung","BKM","OTV","Leads","POM","Weiterempfehlung","Feedback erklären","SMS","Anruf","Verabschieden","Zur Tür begleiten"]
+const structure = {
+"01 CHECK-IN":["Kunden wahrnehmen","Auf Kunden zugehen","Freundlich begrüßen"],
+"02 BEDARFSANALYSE":["Fokus auf Kunden","Anliegen aufnehmen"],
+"03 ABSCHLUSS":["Abschlussfrage","Buchen"]
 };
+
+/* INIT SECTION STATE */
+Object.keys(structure).forEach(s=>{
+if(sectionState[s]===undefined) sectionState[s]=true;
+});
 
 /* METRICS */
 function computeMetrics(){
-var total=0,count=0,issues=[];
-for(var section in structure){
-
-if(sectionState[section]===false) continue;
-
-structure[section].forEach(function(task){
-var id=section+"_"+task;
-var rating=state[id]?state[id].rating:0;
-if(rating>0){
-total+=rating;count++;
-if((rating/5)<0.7){
-issues.push({task:task,percent:(rating/5*100)});
-}
+let totalPossible=0,totalAchieved=0,issues=[];
+for(let section in structure){
+if(!sectionState[section]) continue;
+structure[section].forEach(task=>{
+let id=section+"_"+task;
+let rating=state[id]?.rating||0;
+totalPossible+=5;
+totalAchieved+=rating;
+if(rating>0 && rating/5<0.7){
+issues.push({task,percent:(rating/5*100)});
 }
 });
 }
-var score=count===0?"-":((total/(count*5))*100).toFixed(1)+"%";
-issues.sort(function(a,b){return a.percent-b.percent;});
-return {score:score,issues:issues};
+let score= totalPossible===0 ? "-" : ((totalAchieved/totalPossible)*100).toFixed(1)+"%";
+issues.sort((a,b)=>a.percent-b.percent);
+return {score,issues};
+}
+
+/* UPDATE SCORE */
+function updateScore(){
+let m=computeMetrics();
+document.getElementById("scoreDisplay").innerText=m.score;
+let warn=document.getElementById("warnIcon");
+warn.style.display=m.issues.length?"block":"none";
+}
+
+/* TOUCH SAFE STAR HANDLER */
+function addStarListener(el,callback){
+el.addEventListener("click",callback);
+el.addEventListener("touchstart",(e)=>{
+e.preventDefault();
+callback();
+},{passive:false});
 }
 
 /* RENDER */
-function render(){
-var app=document.getElementById("app");
-app.innerHTML="";
+function init(){
+const app=document.getElementById("app");
 
-for(var section in structure){
+for(let section in structure){
 
-if(sectionState[section]===undefined){
-sectionState[section]=true;
-}
-
-var wrapper=document.createElement("div");
+let wrapper=document.createElement("div");
 wrapper.className="section-wrapper";
-if(sectionState[section]===false){
-wrapper.classList.add("disabled");
-}
+if(!sectionState[section]) wrapper.classList.add("disabled");
 
-var title=document.createElement("div");
+let title=document.createElement("div");
 title.className="section-title";
-title.innerText=section;
+title.innerHTML=`${section}`;
 
-var toggleWrap=document.createElement("label");
-toggleWrap.className="switch";
+let toggleWrap=document.createElement("div");
+toggleWrap.style.display="flex";
+toggleWrap.style.alignItems="center";
 
-var checkbox=document.createElement("input");
+let label=document.createElement("span");
+label.className="toggle-label";
+label.innerText="In Score";
+
+let switchWrap=document.createElement("label");
+switchWrap.className="switch";
+
+let checkbox=document.createElement("input");
 checkbox.type="checkbox";
 checkbox.checked=sectionState[section];
 
-checkbox.onchange=function(s){
-return function(e){
-sectionState[s]=e.target.checked;
+checkbox.onchange=e=>{
+sectionState[section]=e.target.checked;
 localStorage.setItem("vertriebs_sections",JSON.stringify(sectionState));
-render();
+wrapper.classList.toggle("disabled",!e.target.checked);
+updateScore();
 };
-}(section);
 
-var slider=document.createElement("span");
+let slider=document.createElement("span");
 slider.className="slider";
 
-toggleWrap.appendChild(checkbox);
-toggleWrap.appendChild(slider);
+switchWrap.appendChild(checkbox);
+switchWrap.appendChild(slider);
+toggleWrap.appendChild(label);
+toggleWrap.appendChild(switchWrap);
+
 title.appendChild(toggleWrap);
 wrapper.appendChild(title);
 
-structure[section].forEach(function(task){
+structure[section].forEach(task=>{
+let id=section+"_"+task;
+let entry=state[id]||{rating:0};
 
-var id=section+"_"+task;
-var entry=state[id]||{rating:0,note:""};
-
-var card=document.createElement("div");
+let card=document.createElement("div");
 card.className="card";
 
-var t=document.createElement("div");
+let t=document.createElement("div");
 t.className="task";
 t.innerText=task;
 card.appendChild(t);
 
-var stars=document.createElement("div");
+let stars=document.createElement("div");
 stars.className="stars";
 
-for(var i=1;i<=5;i++){
-(function(i){
-var s=document.createElement("div");
+for(let i=1;i<=5;i++){
+let s=document.createElement("div");
 s.className="star";
 if(entry.rating>=i) s.classList.add("active");
 
-s.onclick=function(){
-if(sectionState[section]===false) return;
-if(!state[id]) state[id]={rating:0,note:""};
-state[id].rating=i;
-save();
-};
+addStarListener(s,()=>{
+if(!sectionState[section]) return;
+state[id]={rating:i};
+localStorage.setItem("vertriebs_state",JSON.stringify(state));
+[...stars.children].forEach((c,index)=>{
+c.classList.toggle("active",index<i);
+});
+updateScore();
+});
 stars.appendChild(s);
-})(i);
 }
 
 card.appendChild(stars);
-
-var toggleNote=document.createElement("div");
-toggleNote.className="noteToggle";
-toggleNote.innerText="＋ Notiz";
-card.appendChild(toggleNote);
-
-var noteField=document.createElement("div");
-noteField.className="noteField";
-noteField.innerHTML="<textarea rows='3'>"+(entry.note||"")+"</textarea>";
-card.appendChild(noteField);
-
-toggleNote.onclick=function(){
-if(sectionState[section]===false) return;
-noteField.classList.toggle("open");
-};
-
-noteField.querySelector("textarea").oninput=function(e){
-if(sectionState[section]===false) return;
-if(!state[id]) state[id]={rating:0,note:""};
-state[id].note=e.target.value;
-localStorage.setItem("vertriebs_state",JSON.stringify(state));
-};
-
 wrapper.appendChild(card);
-
 });
 
 app.appendChild(wrapper);
 }
 
-updateUI();
+updateScore();
 }
 
-/* UPDATE */
-function updateUI(){
-var m=computeMetrics();
-document.getElementById("scoreDisplay").innerText=m.score;
-
-var warn=document.getElementById("warnIcon");
-if(m.issues.length>0){
-warn.style.display="inline";
-warn.onclick=function(){
-var sheet=document.getElementById("sheet");
-var content=document.getElementById("sheetContent");
-content.innerHTML="";
-m.issues.slice(0,5).forEach(function(i){
-content.innerHTML+="<div>"+i.task+" – "+i.percent.toFixed(0)+"%</div>";
-});
-sheet.classList.add("open");
+/* PDF PRINT */
+document.getElementById("exportPdfBtn").onclick=function(){
+window.print();
 };
-}else{
-warn.style.display="none";
-}
-}
 
-/* SAVE */
-function save(){
-localStorage.setItem("vertriebs_state",JSON.stringify(state));
-render();
-}
-
-/* RESET DIALOG */
-function resetAfterExport(){
-if(confirm("Export erfolgreich. Formular zurücksetzen?")){
-state={};
-localStorage.removeItem("vertriebs_state");
-render();
-}
-}
-
-/* TXT EXPORT */
-function exportTXT(){
-var m=computeMetrics();
-var text="Vertriebs Check\\n\\n";
-
-for(var section in structure){
-
-if(sectionState[section]===false){
-text+=section+"\\n";
-text+="[Vom Nutzer deaktiviert – nicht in Score berücksichtigt]\\n\\n";
-continue;
-}
-
-text+=section+"\\n";
-
-structure[section].forEach(function(task){
-var id=section+"_"+task;
-var entry=state[id];
-if(!entry||entry.rating===0){text+="- "+task+": Nicht bewertet\\n";}
-else{text+="- "+task+": "+entry.rating+"/5\\n";}
-if(entry&&entry.note){text+="  Notiz: "+entry.note+"\\n";}
-});
-text+="\\n";
-}
-
-text+="Gesamt-Score: "+m.score+"\\n";
-
-var blob=new Blob([text],{type:"text/plain"});
-var link=document.createElement("a");
+/* TXT */
+document.getElementById("exportTxtBtn").onclick=function(){
+let m=computeMetrics();
+let blob=new Blob(["Score: "+m.score],{type:"text/plain"});
+let link=document.createElement("a");
 link.href=URL.createObjectURL(blob);
-link.download="vertriebs_export.txt";
+link.download="report.txt";
 link.click();
+};
 
-resetAfterExport();
-}
-
-/* PDF EXPORT */
-function exportPDF(){
-var m=computeMetrics();
-var now=new Date().toLocaleString();
-var win=window.open("","_blank");
-
-win.document.write("<html><head><title>Report</title>");
-win.document.write("<style>body{font-family:Arial;padding:40px;} .header{background:#E20074;color:white;padding:20px;border-radius:8px;} .kpi{margin-top:20px;padding:15px;background:#f4f4f4;border-left:6px solid #E20074;}</style>");
-win.document.write("</head><body>");
-
-win.document.write("<div class='header'><h2>Flamingo Feedback – Vertriebsreport</h2><p>Datum: "+now+"</p><p>Gesamt-Score: <strong>"+m.score+"</strong></p></div>");
-
-for(var section in structure){
-
-if(sectionState[section]===false){
-win.document.write("<h3>"+section+"</h3>");
-win.document.write("<p><em>Vom Nutzer deaktiviert – nicht in Score berücksichtigt</em></p>");
-continue;
-}
-
-win.document.write("<h3>"+section+"</h3>");
-
-structure[section].forEach(function(task){
-var id=section+"_"+task;
-var entry=state[id];
-if(!entry||entry.rating===0){
-win.document.write("<p><strong>"+task+":</strong> Nicht bewertet</p>");
-}else{
-win.document.write("<p><strong>"+task+":</strong> "+entry.rating+"/5</p>");
-}
-if(entry&&entry.note){
-win.document.write("<p style='margin-left:15px;font-style:italic;'>Notiz: "+entry.note+"</p>");
-}
+/* OVERLAY */
+document.getElementById("warnIcon").onclick=function(){
+let m=computeMetrics();
+let sheet=document.getElementById("sheet");
+let content=document.getElementById("sheetContent");
+content.innerHTML="";
+m.issues.slice(0,5).forEach(i=>{
+content.innerHTML+=`<div>${i.task} – ${i.percent.toFixed(0)}%</div>`;
 });
-}
+sheet.classList.toggle("open");
+};
+document.getElementById("sheet").onclick=e=>{
+if(e.target.id==="sheet") e.currentTarget.classList.remove("open");
+};
 
-win.document.write("<div style='margin-top:50px;'>_________________________<br>Mitarbeiter<br><br>_________________________<br>Coach</div>");
-win.document.write("<script>window.onload=function(){window.print();};<\/script>");
-win.document.write("</body></html>");
-win.document.close();
-
-resetAfterExport();
-}
-
-/* SERVICE WORKER */
-if('serviceWorker' in navigator){
-navigator.serviceWorker.register('./sw.js');
-}
-
-render();
+/* START */
+init();
 
 </script>
 </body>
