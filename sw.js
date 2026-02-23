@@ -1,4 +1,5 @@
-const CACHE_NAME = "fff-cache-v1";
+const CACHE_NAME = "fff-cache-v2";
+
 const ASSETS = [
   "./",
   "./index.html",

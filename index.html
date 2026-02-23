@@ -16,7 +16,6 @@
 --muted:#777;
 --warn:#ff9500;
 }
-
 *{box-sizing:border-box;}
 body{
 margin:0;
@@ -24,8 +23,6 @@ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
 background:black;
 overflow-x:hidden;
 }
-
-/* SPLASH */
 #splash{
 position:fixed;
 inset:0;
@@ -39,8 +36,6 @@ z-index:9999;
 max-width:80%;
 height:auto;
 }
-
-/* HERO */
 .hero{
 height:45vh;
 min-height:260px;
@@ -56,8 +51,6 @@ width:100%;
 height:100%;
 object-fit:contain;
 }
-
-/* MAIN */
 .main{
 background:var(--magenta);
 border-radius:36px 36px 0 0;
@@ -65,7 +58,6 @@ margin-top:-30px;
 padding-top:20px;
 min-height:100vh;
 }
-
 .header{
 position:sticky;
 top:0;
@@ -77,7 +69,6 @@ font-size:26px;
 font-weight:600;
 z-index:5;
 }
-
 .warnIcon{
 position:absolute;
 right:18px;
@@ -86,63 +77,52 @@ font-size:22px;
 display:none;
 cursor:pointer;
 }
-
 .container{
 max-width:720px;
 margin:auto;
 padding:16px;
 }
-
 .sectionTitle{
 color:white;
 margin:24px 0 12px;
 font-weight:600;
 font-size:15px;
 }
-
 .card{
 background:white;
 border-radius:16px;
 padding:16px;
 margin-bottom:16px;
 }
-
 .task{
 font-size:14px;
 margin-bottom:8px;
 }
-
 .stars{
 display:flex;
 gap:10px;
 }
-
 .star{
 font-size:30px;
 color:#ccc;
 cursor:pointer;
 }
-
 .star.active{
 color:var(--magenta);
 }
-
 .noteToggle{
 margin-top:8px;
 font-size:13px;
 color:var(--muted);
 cursor:pointer;
 }
-
 .noteField{
 display:none;
 margin-top:8px;
 }
-
 .noteField.open{
 display:block;
 }
-
 .noteField textarea{
 width:100%;
 padding:8px;
@@ -150,17 +130,17 @@ border-radius:10px;
 border:1px solid #ddd;
 resize:none;
 }
-
 .footer{
 position:sticky;
 bottom:0;
 background:white;
 padding:14px;
 border-top:1px solid #ddd;
+display:flex;
+gap:10px;
 }
-
 button{
-width:100%;
+flex:1;
 padding:14px;
 border:none;
 border-radius:14px;
@@ -168,9 +148,8 @@ background:var(--magenta);
 color:white;
 font-weight:600;
 font-size:16px;
+cursor:pointer;
 }
-
-/* OVERLAY */
 .sheet{
 position:fixed;
 bottom:-100%;
@@ -185,12 +164,8 @@ max-height:70%;
 overflow:auto;
 z-index:20;
 }
-.sheet.open{
-bottom:0;
-}
-.sheet h3{
-margin-top:0;
-}
+.sheet.open{ bottom:0; }
+.sheet h3{ margin-top:0; }
 .closeBtn{
 position:absolute;
 right:20px;
@@ -198,12 +173,9 @@ top:16px;
 font-size:18px;
 cursor:pointer;
 }
-.sheetItem{
-margin-bottom:10px;
-}
+.sheetItem{ margin-bottom:10px; }
 </style>
 </head>
-
 <body>
 
 <div id="splash">
@@ -226,7 +198,8 @@ margin-bottom:10px;
 </section>
 
 <div class="footer">
-<button onclick="exportTXT()">Export als TXT</button>
+<button onclick="exportTXT()">Export TXT</button>
+<button onclick="exportPDF()">Export PDF</button>
 </div>
 
 <div class="sheet" id="sheet">
@@ -236,13 +209,11 @@ margin-bottom:10px;
 </div>
 
 <script>
-
-/* SPLASH 2000ms */
 setTimeout(()=>{
 document.getElementById("splash").remove();
+window.scrollTo(0,0);
 },2000);
 
-/* SSOT STATE */
 let state = JSON.parse(localStorage.getItem("vertriebs_state")) || {};
 
 const structure = {
@@ -261,38 +232,38 @@ const structure = {
 "Gesprächsnotiz","Systemcheck",
 "Bestand vervollständigen","Magenta View",
 "KEK aktualisieren","Glasfaser prüfen","Systeme beherrschen"
-],
-"03 LÖSUNG ERARBEITEN":[
-"Infos zusammenfassen","Bildabgleich","JA einholen",
-"Weitere Wünsche","Cross-Selling",
-"Upselling","Versteckte Bedarfe",
-"Geduld erbitten","Experten einbinden"
-],
-"04 LÖSUNG VORSTELLEN":[
-"Lösung ohne Preis","Lösung skizzieren","Nutzen hervorheben",
-"Shop live nutzen","Shop digital nutzen",
-"Erlebbar machen","Finaler Bildabgleich","Weitere JA"
-],
-"05 ANGEBOT VORSTELLEN":[
-"Ins Angebotstool","Aktionen nutzen","Angebot mit Preisen"
-],
-"06 EINWANDBEHANDLUNG":[
-"Einwände unterscheiden","Nonverbal beachten",
-"Einwände annehmen","Einwandmethoden"
-],
-"07 ABSCHLUSS & BUCHEN":[
-"Alternativfragen","Abschlussfrage","Stille aushalten",
-"Buchen","Qualitätsstandards"
-],
-"08 KUNDENBINDUNG":[
-"Bestärken","Folgekontakte","Kundenzuführung",
-"BKM","OTV","Leads","POM",
-"Weiterempfehlung","Feedback erklären",
-"SMS","Anruf","Verabschieden","Zur Tür begleiten"
 ]
 };
 
-/* RENDER */
+function computeMetrics(){
+let total=0;
+let count=0;
+let issues=[];
+
+Object.entries(structure).forEach(([section,tasks])=>{
+tasks.forEach(task=>{
+const id=section+"_"+task;
+const rating=state[id]?.rating || 0;
+
+if(rating>0){
+total+=rating;
+count++;
+if((rating/5)<0.7){
+issues.push({
+task,
+percent:(rating/5*100)
+});
+}
+}
+});
+});
+
+let score = count===0 ? "-" : ((total/(count*5))*100).toFixed(1)+"%";
+issues.sort((a,b)=>a.percent-b.percent);
+
+return { score, count, total, issues };
+}
+
 function render(){
 const app=document.getElementById("app");
 app.innerHTML="";
@@ -350,58 +321,27 @@ app.appendChild(card);
 });
 });
 
-calculate();
+updateUI();
 }
 
-/* SAVE */
-function save(reRender=true){
-localStorage.setItem("vertriebs_state",JSON.stringify(state));
-if(reRender) render();
-}
+function updateUI(){
+const {score, issues} = computeMetrics();
 
-/* SCORE + OVERLAY */
-function calculate(){
-let total=0;
-let count=0;
-let issues=[];
-
-Object.entries(structure).forEach(([section,tasks])=>{
-tasks.forEach(task=>{
-const id=section+"_"+task;
-const rating=state[id]?.rating || 0;
-
-if(rating>0){
-total+=rating;
-count++;
-
-if((rating/5)<0.7){
-issues.push({
-task,
-percent:(rating/5*100)
-});
-}
-}
-});
-});
-
-const scoreEl=document.getElementById("scoreDisplay");
-
-if(count===0){
-scoreEl.innerText="–";
-}else{
-scoreEl.innerText=((total/(count*5))*100).toFixed(1)+"%";
-}
+document.getElementById("scoreDisplay").innerText = score;
 
 const warn=document.getElementById("warnIcon");
-
 if(issues.length>0){
 warn.style.display="inline";
-warn.onclick=()=>openSheet(
-issues.sort((a,b)=>a.percent-b.percent).slice(0,5)
-);
+warn.onclick=()=>openSheet(issues.slice(0,5));
 }else{
 warn.style.display="none";
 }
+}
+
+function save(reRender=true){
+localStorage.setItem("vertriebs_state",JSON.stringify(state));
+if(reRender) render();
+else updateUI();
 }
 
 function openSheet(list){
@@ -418,9 +358,9 @@ function closeSheet(){
 document.getElementById("sheet").classList.remove("open");
 }
 
-/* EXPORT */
 function exportTXT(){
-let text="Vertriebs Check 01–08\n\n";
+const {score} = computeMetrics();
+let text="Vertriebs Check\n\n";
 
 Object.entries(structure).forEach(([section,tasks])=>{
 text+=section+"\n";
@@ -433,7 +373,6 @@ text+=`- ${task}: Nicht bewertet\n`;
 }else{
 text+=`- ${task}: ${entry.rating}/5\n`;
 }
-
 if(entry?.note){
 text+=`  Notiz: ${entry.note}\n`;
 }
@@ -441,7 +380,7 @@ text+=`  Notiz: ${entry.note}\n`;
 text+="\n";
 });
 
-text+=`Gesamt-Score: ${document.getElementById("scoreDisplay").innerText}\n`;
+text+=`Gesamt-Score: ${score}\n`;
 
 const blob=new Blob([text],{type:"text/plain"});
 const link=document.createElement("a");
@@ -450,7 +389,76 @@ link.download="vertriebs_export.txt";
 link.click();
 }
 
-/* SERVICE WORKER */
+function exportPDF(){
+const {score, issues} = computeMetrics();
+let now = new Date();
+let timestamp = now.toLocaleString();
+
+let detailHTML="";
+Object.entries(structure).forEach(([section,tasks])=>{
+detailHTML += `<h3>${section}</h3>`;
+tasks.forEach(task=>{
+const id=section+"_"+task;
+const entry=state[id];
+if(!entry || entry.rating===0){
+detailHTML += `<p><strong>${task}:</strong> Nicht bewertet</p>`;
+}else{
+detailHTML += `<p><strong>${task}:</strong> ${entry.rating}/5</p>`;
+}
+if(entry?.note){
+detailHTML += `<p style="margin-left:15px; font-style:italic;">Notiz: ${entry.note}</p>`;
+}
+});
+});
+
+let issuesHTML="";
+if(issues.length>0){
+issuesHTML="<ul>";
+issues.slice(0,5).forEach(i=>{
+issuesHTML+=`<li>${i.task} – ${i.percent.toFixed(0)}%</li>`;
+});
+issuesHTML+="</ul>";
+}else{
+issuesHTML="<p>Keine Entwicklungsfelder unter 70 %</p>";
+}
+
+let report=`
+<html>
+<head>
+<title>Vertriebsreport</title>
+<style>
+body{font-family:Arial;padding:40px;}
+.header{background:#e20074;color:white;padding:20px;border-radius:8px;}
+.kpi{margin-top:20px;padding:15px;background:#f4f4f4;border-left:6px solid #e20074;}
+.signature{margin-top:50px;}
+</style>
+</head>
+<body>
+<div class="header">
+<h2>Flamingo Feedback – Vertriebsreport</h2>
+<p>Datum: ${timestamp}</p>
+<p>Gesamt-Score: <strong>${score}</strong></p>
+</div>
+<div class="kpi">
+<h3>Entwicklungsfelder (&lt;70%)</h3>
+${issuesHTML}
+</div>
+${detailHTML}
+<div class="signature">
+<p>_________________________<br>Mitarbeiter</p>
+<br>
+<p>_________________________<br>Coach</p>
+</div>
+<script>window.onload=function(){window.print();}</script>
+</body>
+</html>
+`;
+
+let win=window.open("","_blank");
+win.document.write(report);
+win.document.close();
+}
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
