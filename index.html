@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>FFF – Flamingo Feedback Formular WBA</title>
 <meta name="theme-color" content="#E20074">
 <link rel="manifest" href="manifest.json">
@@ -15,6 +15,7 @@
   --card-bg:#111111;
   --muted:#888;
   --white:#ffffff;
+  --disabled-bg:#1a1a1a;
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -27,8 +28,8 @@ body{
   overflow-x:hidden;
 }
 
-/* SPLASH SCREEN */
-#splash{
+/* SPLASH SCREENS */
+.splash-container{
   position:fixed;
   inset:0;
   background:#000;
@@ -38,11 +39,14 @@ body{
   z-index:9999;
   transition:opacity 0.5s ease;
 }
-#splash.fade-out{
+.splash-container.fade-out{
   opacity:0;
   pointer-events:none;
 }
-#splash img{
+.splash-container.hidden{
+  display:none;
+}
+.splash-container img{
   max-width:85%;
   max-height:70vh;
   object-fit:contain;
@@ -50,9 +54,9 @@ body{
 
 /* HERO */
 .hero{
-  height:40vh;
-  min-height:220px;
-  max-height:380px;
+  height:35vh;
+  min-height:200px;
+  max-height:350px;
   background:#000;
   display:flex;
   align-items:center;
@@ -75,7 +79,7 @@ body{
 .header{
   background:var(--bg);
   border-bottom:3px solid var(--magenta);
-  padding:20px;
+  padding:16px 20px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -85,31 +89,41 @@ body{
 }
 
 .app-title{
-  font-size:22px;
+  font-size:18px;
   font-weight:700;
   color:var(--magenta);
   letter-spacing:1px;
 }
 
 #scoreDisplay{
-  font-size:48px;
+  font-size:42px;
   font-weight:800;
   color:var(--magenta);
   text-shadow:0 0 20px rgba(226,0,116,0.5);
 }
 
 .warnIcon{
-  font-size:26px;
+  font-size:24px;
   display:none;
   cursor:pointer;
   filter:drop-shadow(0 0 8px rgba(255,200,0,0.8));
 }
 
-/* CONTAINER */
+/* CONTAINER - RESPONSIVE GRID */
 .container{
-  max-width:900px;
+  max-width:1400px;
   margin:auto;
-  padding:24px;
+  padding:20px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:24px;
+}
+
+/* WIDESCREEN: 2 columns */
+@media(min-width:1200px){
+  .container{
+    grid-template-columns:1fr 1fr;
+  }
 }
 
 /* SECTION WRAPPER */
@@ -118,15 +132,15 @@ body{
   border:3px solid var(--magenta);
   border-radius:16px;
   padding:4px;
-  margin-bottom:28px;
   box-shadow:0 0 25px rgba(226,0,116,0.3);
   transition:all 0.3s ease;
+  break-inside:avoid;
 }
 .section-wrapper.disabled{
-  opacity:0.3;
-  border-color:#333;
+  opacity:0.6;
+  border-color:#444;
   box-shadow:none;
-  filter:grayscale(100%);
+  background:var(--disabled-bg);
 }
 
 /* INNER WHITE BORDER */
@@ -134,24 +148,34 @@ body{
   background:var(--card-bg);
   border:2px solid var(--white);
   border-radius:12px;
-  padding:20px;
+  padding:16px;
+}
+.section-wrapper.disabled .section-inner{
+  background:#151515;
+  border-color:#555;
 }
 
 .section-title{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:16px;
-  padding-bottom:12px;
+  margin-bottom:14px;
+  padding-bottom:10px;
   border-bottom:2px solid var(--magenta);
+}
+.section-wrapper.disabled .section-title{
+  border-bottom-color:#444;
 }
 
 .section-name{
-  font-size:18px;
+  font-size:16px;
   font-weight:700;
   color:var(--magenta);
   text-transform:uppercase;
   letter-spacing:0.5px;
+}
+.section-wrapper.disabled .section-name{
+  color:#666;
 }
 
 .toggle-wrap{
@@ -161,7 +185,7 @@ body{
 }
 
 .toggle-label{
-  font-size:11px;
+  font-size:10px;
   color:var(--muted);
   text-transform:uppercase;
 }
@@ -186,29 +210,42 @@ input:checked + .slider:before{transform:translateX(22px);background:var(--white
   background:#1a1a1a;
   border:1px solid #333;
   border-radius:10px;
-  padding:14px;
-  margin-bottom:12px;
+  padding:12px;
+  margin-bottom:10px;
   transition:all 0.2s;
 }
 .card:hover{
   border-color:var(--magenta);
   box-shadow:0 0 10px rgba(226,0,116,0.2);
 }
-
-.task{
-  font-size:14px;
-  font-weight:500;
-  color:var(--magenta);
-  margin-bottom:10px;
+.section-wrapper.disabled .card{
+  background:#141414;
+  border-color:#2a2a2a;
+}
+.section-wrapper.disabled .card:hover{
+  border-color:#2a2a2a;
+  box-shadow:none;
 }
 
+.task{
+  font-size:13px;
+  font-weight:500;
+  color:var(--magenta);
+  margin-bottom:8px;
+}
+.section-wrapper.disabled .task{
+  color:#555;
+}
+
+/* STARS - RESPONSIVE */
 .stars{
   display:flex;
-  gap:8px;
+  gap:6px;
+  flex-wrap:wrap;
 }
 
 .star{
-  font-size:36px;
+  font-size:32px;
   color:#333;
   cursor:pointer;
   user-select:none;
@@ -221,7 +258,103 @@ input:checked + .slider:before{transform:translateX(22px);background:var(--white
 .star.active{
   color:var(--magenta);
   text-shadow:0 0 15px rgba(226,0,116,0.8);
-  transform:scale(1.1);
+  transform:scale(1.05);
+}
+
+/* DISABLED STARS */
+.section-wrapper.disabled .star{
+  color:#2a2a2a;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+.section-wrapper.disabled .star.active{
+  color:#444;
+  text-shadow:none;
+  transform:none;
+}
+
+/* MOBILE: BIGGER STARS */
+@media(max-width:600px){
+  .star{
+    font-size:44px;
+    padding:4px;
+  }
+  .stars{
+    gap:4px;
+    justify-content:space-between;
+  }
+  .task{
+    font-size:14px;
+  }
+  .section-name{
+    font-size:14px;
+  }
+  .app-title{
+    font-size:14px;
+  }
+  #scoreDisplay{
+    font-size:36px;
+  }
+}
+
+/* TABLET */
+@media(min-width:601px) and (max-width:1199px){
+  .star{
+    font-size:38px;
+  }
+}
+
+/* NOTE FIELD */
+.note-toggle{
+  margin-top:10px;
+  font-size:12px;
+  color:#666;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.note-toggle:hover{
+  color:var(--magenta);
+}
+.note-toggle-icon{
+  transition:transform 0.2s;
+}
+.note-toggle.open .note-toggle-icon{
+  transform:rotate(90deg);
+}
+
+.note-field{
+  display:none;
+  margin-top:8px;
+}
+.note-field.open{
+  display:block;
+}
+.note-field textarea{
+  width:100%;
+  min-height:60px;
+  background:#0d0d0d;
+  color:var(--white);
+  border:1px solid #333;
+  border-radius:8px;
+  padding:10px;
+  font-family:inherit;
+  font-size:13px;
+  resize:vertical;
+}
+.note-field textarea:focus{
+  outline:none;
+  border-color:var(--magenta);
+}
+.section-wrapper.disabled .note-toggle{
+  pointer-events:none;
+  color:#333;
+}
+.section-wrapper.disabled .note-field textarea{
+  background:#111;
+  color:#444;
+  pointer-events:none;
 }
 
 /* FOOTER */
@@ -230,24 +363,26 @@ input:checked + .slider:before{transform:translateX(22px);background:var(--white
   bottom:0;
   background:#0a0a0a;
   border-top:2px solid var(--magenta);
-  padding:14px;
+  padding:12px;
   display:flex;
-  gap:10px;
+  gap:8px;
+  flex-wrap:wrap;
 }
 
 button{
   flex:1;
-  padding:16px;
+  min-width:120px;
+  padding:14px 10px;
   border:2px solid var(--magenta);
-  border-radius:14px;
+  border-radius:12px;
   background:transparent;
   color:var(--magenta);
   font-weight:700;
-  font-size:15px;
+  font-size:13px;
   cursor:pointer;
   transition:all 0.2s;
   text-transform:uppercase;
-  letter-spacing:1px;
+  letter-spacing:0.5px;
 }
 button:hover{
   background:var(--magenta);
@@ -336,91 +471,163 @@ button:hover{
   color:var(--white);
 }
 
-/* PRINT STYLES */
+/* ==================== PRINT STYLES ==================== */
 @media print{
+  @page{
+    size:A4;
+    margin:15mm 10mm;
+  }
+  
+  *{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+    color-adjust:exact !important;
+  }
+  
   body{
     background:white !important;
     color:black !important;
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
+    font-size:11pt;
+    line-height:1.3;
   }
   
-  #splash,.hero,.footer,.warnIcon,.sheet,.pdf-modal{
+  .splash-container,.hero,.footer,.warnIcon,.sheet,.pdf-modal{
     display:none !important;
   }
   
-  .header{
-    position:relative;
+  .main{
     background:white !important;
-    border-bottom:4px solid var(--magenta) !important;
-    padding:10px 20px;
+  }
+  
+  .header{
+    position:relative !important;
+    background:white !important;
+    border-bottom:3pt solid var(--magenta) !important;
+    padding:8mm 0;
+    margin-bottom:5mm;
   }
   
   .app-title{
     color:var(--magenta) !important;
+    font-size:14pt;
   }
   
   #scoreDisplay{
     color:var(--magenta) !important;
     text-shadow:none !important;
-    font-size:36px;
+    font-size:28pt;
   }
   
   .container{
-    padding:10px;
+    display:block !important;
+    padding:0 !important;
+    max-width:100% !important;
   }
   
+  /* SECTION PRINT */
   .section-wrapper{
     background:white !important;
-    border:3px solid var(--magenta) !important;
+    border:2pt solid var(--magenta) !important;
     box-shadow:none !important;
-    margin-bottom:15px;
-    page-break-inside:avoid;
+    margin-bottom:8mm;
+    padding:2mm;
+    page-break-inside:avoid !important;
+    break-inside:avoid !important;
   }
   .section-wrapper.disabled{
-    opacity:0.5;
-    border-color:#ccc !important;
+    opacity:0.7;
+    border-color:#999 !important;
   }
   
   .section-inner{
     background:white !important;
-    border:2px solid #ddd !important;
+    border:1pt solid #ccc !important;
+    padding:4mm;
   }
   
   .section-title{
-    border-bottom:2px solid var(--magenta) !important;
+    border-bottom:1.5pt solid var(--magenta) !important;
+    padding-bottom:2mm;
+    margin-bottom:3mm;
+  }
+  .section-wrapper.disabled .section-title{
+    border-bottom-color:#999 !important;
   }
   
   .section-name{
     color:var(--magenta) !important;
-    font-size:16px;
+    font-size:12pt;
+  }
+  .section-wrapper.disabled .section-name{
+    color:#666 !important;
   }
   
   .toggle-wrap{
     display:none !important;
   }
   
+  /* CARD PRINT */
   .card{
-    background:#f8f8f8 !important;
-    border:1px solid #ddd !important;
-    margin-bottom:8px;
-    padding:10px;
+    background:#f9f9f9 !important;
+    border:0.5pt solid #ddd !important;
+    margin-bottom:2mm;
+    padding:3mm;
+    page-break-inside:avoid !important;
+    break-inside:avoid !important;
   }
   
   .task{
     color:black !important;
-    font-size:13px;
+    font-size:10pt;
+    margin-bottom:2mm;
+  }
+  .section-wrapper.disabled .task{
+    color:#666 !important;
+  }
+  
+  /* STARS PRINT */
+  .stars{
+    gap:2mm;
   }
   
   .star{
-    font-size:28px !important;
+    font-size:18pt !important;
     text-shadow:none !important;
+    transform:none !important;
   }
   .star.active{
     color:var(--magenta) !important;
   }
   
-  /* Blanko Print Mode */
+  /* DISABLED STARS PRINT */
+  .section-wrapper.disabled .star{
+    color:#ccc !important;
+  }
+  .section-wrapper.disabled .star.active{
+    color:#999 !important;
+  }
+  
+  /* NOTE PRINT */
+  .note-toggle{
+    display:none !important;
+  }
+  .note-field{
+    display:block !important;
+    margin-top:2mm;
+  }
+  .note-field textarea{
+    background:white !important;
+    border:0.5pt solid #ccc !important;
+    color:black !important;
+    font-size:9pt;
+    min-height:15mm;
+    padding:2mm;
+  }
+  .note-field.empty{
+    display:none !important;
+  }
+  
+  /* BLANKO MODE */
   body.print-blanko .star{
     color:#ddd !important;
   }
@@ -430,19 +637,27 @@ button:hover{
   body.print-blanko #scoreDisplay{
     visibility:hidden;
   }
+  body.print-blanko .note-field textarea{
+    background:#fafafa !important;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- SPLASH SCREEN -->
-<div id="splash">
-  <img src="taktikboard.jpg" alt="Flamingo Taktikboard">
+<!-- SPLASH 1: FFF LOGO - 2500ms -->
+<div class="splash-container" id="splash1">
+  <img src="splash.png" alt="FFF Logo">
+</div>
+
+<!-- SPLASH 2: TAKTIKBOARD - 2000ms -->
+<div class="splash-container hidden" id="splash2">
+  <img src="taktikboard.jpg" alt="Taktikboard">
 </div>
 
 <!-- HERO -->
-<div class="hero">
+<div class="hero" id="heroSection" style="display:none;">
   <img src="taktikboard.jpg" alt="Flamingo Feedback">
 </div>
 
@@ -484,17 +699,36 @@ button:hover{
 
 <script>
 
-/* SPLASH SCREEN - 2500ms */
+/* SPLASH SCREEN SEQUENCE */
+// Splash 1: FFF Logo - 2500ms
+// Splash 2: Taktikboard - 2000ms
+// Then: Hero section
+
+const splash1 = document.getElementById("splash1");
+const splash2 = document.getElementById("splash2");
+const heroSection = document.getElementById("heroSection");
+
 setTimeout(()=>{
-  document.getElementById("splash").classList.add("fade-out");
+  splash1.classList.add("fade-out");
   setTimeout(()=>{
-    document.getElementById("splash").style.display="none";
+    splash1.classList.add("hidden");
+    splash2.classList.remove("hidden");
+    
+    setTimeout(()=>{
+      splash2.classList.add("fade-out");
+      setTimeout(()=>{
+        splash2.classList.add("hidden");
+        heroSection.style.display = "flex";
+      },500);
+    },2000);
+    
   },500);
 },2500);
 
 /* STATE */
 let state = JSON.parse(localStorage.getItem("wba_feedback_state")) || {};
 let sectionState = JSON.parse(localStorage.getItem("wba_feedback_sections")) || {};
+let noteState = JSON.parse(localStorage.getItem("wba_feedback_notes")) || {};
 
 /* COMPLETE STRUCTURE - 8 SECTIONS */
 const structure = {
@@ -598,6 +832,7 @@ Object.keys(structure).forEach(s=>{
 function saveState(){
   localStorage.setItem("wba_feedback_state",JSON.stringify(state));
   localStorage.setItem("wba_feedback_sections",JSON.stringify(sectionState));
+  localStorage.setItem("wba_feedback_notes",JSON.stringify(noteState));
 }
 
 /* METRICS CALCULATION */
@@ -605,6 +840,7 @@ function computeMetrics(){
   let totalPossible=0, totalAchieved=0, issues=[];
   
   for(let section in structure){
+    // Skip disabled sections completely
     if(!sectionState[section]) continue;
     
     structure[section].forEach(task=>{
@@ -725,6 +961,7 @@ function init(){
     structure[section].forEach(task=>{
       let id=section+"_"+task;
       let entry=state[id]||{rating:0};
+      let noteText=noteState[id]||"";
       
       let card=document.createElement("div");
       card.className="card";
@@ -747,6 +984,7 @@ function init(){
         if(entry.rating>=i) star.classList.add("active");
         
         addStarListener(star,()=>{
+          // Block clicks if section is disabled
           if(!sectionState[section]) return;
           
           // Toggle: if clicking same rating, reset to 0
@@ -769,6 +1007,47 @@ function init(){
       }
       
       card.appendChild(starsDiv);
+      
+      // NOTE TOGGLE
+      let noteToggle=document.createElement("div");
+      noteToggle.className="note-toggle";
+      noteToggle.innerHTML=`<span class="note-toggle-icon">▶</span> Notiz`;
+      
+      // NOTE FIELD
+      let noteField=document.createElement("div");
+      noteField.className="note-field";
+      if(noteText) noteField.classList.add("open");
+      
+      let textarea=document.createElement("textarea");
+      textarea.placeholder="Notiz hinzufügen...";
+      textarea.value=noteText;
+      textarea.setAttribute("data-testid","note-"+id.replace(/\s+/g,"-"));
+      
+      textarea.oninput=(e)=>{
+        noteState[id]=e.target.value;
+        saveState();
+        // Mark as empty for print if no content
+        if(e.target.value.trim()===""){
+          noteField.classList.add("empty");
+        }else{
+          noteField.classList.remove("empty");
+        }
+      };
+      
+      if(!noteText.trim()) noteField.classList.add("empty");
+      
+      noteToggle.onclick=()=>{
+        if(!sectionState[section]) return;
+        noteToggle.classList.toggle("open");
+        noteField.classList.toggle("open");
+      };
+      
+      if(noteText) noteToggle.classList.add("open");
+      
+      noteField.appendChild(textarea);
+      card.appendChild(noteToggle);
+      card.appendChild(noteField);
+      
       inner.appendChild(card);
     });
     
@@ -812,26 +1091,31 @@ document.getElementById("exportTxtBtn").onclick=function(){
   let time=new Date().toLocaleTimeString("de-DE");
   
   let text=`FLAMINGO FEEDBACK WBA REPORT\n`;
-  text+=`============================\n`;
+  text+=`════════════════════════════════════════\n`;
   text+=`Datum: ${date} ${time}\n`;
   text+=`Gesamtscore: ${m.score}\n\n`;
   
   for(let section in structure){
     let isActive=sectionState[section];
     text+=`\n${section} ${isActive?"[AKTIV]":"[DEAKTIVIERT]"}\n`;
-    text+=`${"─".repeat(40)}\n`;
+    text+=`${"─".repeat(45)}\n`;
     
     structure[section].forEach(task=>{
       let id=section+"_"+task;
       let rating=state[id]?.rating||0;
       let stars="★".repeat(rating)+"☆".repeat(5-rating);
+      let note=noteState[id]||"";
+      
       text+=`  ${task}: ${stars} (${rating}/5)\n`;
+      if(note.trim()){
+        text+=`     → Notiz: ${note.trim()}\n`;
+      }
     });
   }
   
   if(m.issues.length>0){
     text+=`\n\nENTWICKLUNGSFELDER (<70%)\n`;
-    text+=`${"═".repeat(40)}\n`;
+    text+=`${"═".repeat(45)}\n`;
     m.issues.forEach(i=>{
       text+=`  • ${i.task} - ${i.percent.toFixed(0)}%\n`;
     });
@@ -846,8 +1130,9 @@ document.getElementById("exportTxtBtn").onclick=function(){
 
 /* RESET */
 document.getElementById("resetBtn").onclick=function(){
-  if(confirm("Alle Bewertungen zurücksetzen?")){
+  if(confirm("Alle Bewertungen und Notizen zurücksetzen?")){
     state={};
+    noteState={};
     Object.keys(structure).forEach(s=>sectionState[s]=true);
     saveState();
     init();
