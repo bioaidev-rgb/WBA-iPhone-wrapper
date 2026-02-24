@@ -1,70 +1,59 @@
 # Flamingo Feedback WBA App - PRD
 
 ## Original Problem Statement
-Repair the Feedback Formular WBA App. The data was wiped (only minimum left) and the design was broken. User needed the app restored to a usable state.
+Repair the Feedback Formular WBA App. Data was wiped and design was broken.
+
+## Latest Updates (2026-01-28)
+- ✅ Notizfeld pro Task
+- ✅ Deaktivierte Sektionen: grau, nicht anklickbar, nicht berechnet
+- ✅ Responsive: Große Sterne auf Handy (44px), 2-spaltig auf Widescreen
+- ✅ Professioneller PDF Export mit page-break-avoid
+- ✅ Splash-Sequenz: FFF Logo (2500ms) → Taktikboard (2000ms) → Hero
 
 ## User Personas
-- **Shop-Mitarbeiter/Verkäufer**: Nutzen die App zur Selbstbewertung und Feedback-Erfassung während Kundengesprächen
-- **Team-Leads/Coaches**: Bewerten Mitarbeiter-Performance und identifizieren Entwicklungsfelder
-- **Training-Manager**: Exportieren Reports für Dokumentation und Schulungszwecke
+- **Shop-Mitarbeiter**: Selbstbewertung während Kundengesprächen
+- **Team-Leads/Coaches**: Mitarbeiter-Performance bewerten
+- **Training-Manager**: Reports exportieren
 
-## Core Requirements (Static)
-1. ✅ 8 Verkaufs-Sektionen mit allen Tasks wiederhergestellt
-2. ✅ Jede Sektion deaktivierbar (ausgegraut, vom Score ausgeschlossen)
-3. ✅ Splash Screen (2500ms) mit Taktikboard-Bild
-4. ✅ PDF Export mit 2 Optionen (Ausgefüllt + Blanko)
-5. ✅ Design: Schwarzer Hintergrund, Magenta Rahmen, weißer innerer Rahmen
-6. ✅ Magenta Sterne und Text
-7. ✅ TXT Export
-8. ✅ Reset-Funktion
-9. ✅ Warnungs-Icon für Entwicklungsfelder (<70%)
+## Core Requirements (Implemented)
+1. ✅ 8 Sektionen mit 73+ Tasks
+2. ✅ Sektionen deaktivierbar (grau, nicht anklickbar, nicht berechnet)
+3. ✅ Splash Screen Sequenz (FFF Logo 2500ms → Taktikboard 2000ms → Hero)
+4. ✅ PDF Export 2 Optionen (Ausgefüllt + Blanko)
+5. ✅ Design: Schwarz/Magenta/Weiß
+6. ✅ Notizfeld pro Task
+7. ✅ Responsive: Mobile große Sterne, Widescreen 2-spaltig
+8. ✅ TXT Export mit Notizen
+9. ✅ Reset-Funktion
+10. ✅ Warnung für Entwicklungsfelder (<70%)
+11. ✅ Service Worker für Offline
 
 ## Architecture
-- **Frontend**: Standalone HTML/CSS/JavaScript (keine Frameworks)
-- **Storage**: localStorage für Persistenz
-- **PWA-fähig**: manifest.json, sw.js vorhanden
-- **Responsive**: Mobile-optimiert
-
-## What's Been Implemented
-### 2026-01-28
-- ✅ Vollständige Wiederherstellung aller 8 Sektionen (73+ Tasks)
-- ✅ Sektionen: CHECK-IN, BEDARFS- & UMFELDANALYSE, LÖSUNG ERARBEITEN, LÖSUNG VORSTELLEN, ANGEBOT VORSTELLEN, EINWANDBEHANDLUNG, ABSCHLUSS & BUCHEN, KUNDENBINDUNG
-- ✅ Stern-Bewertungssystem (1-5 Sterne pro Task)
-- ✅ Dynamische Score-Berechnung
-- ✅ Sektions-Toggle (Aktiv/Deaktiv)
-- ✅ Splash Screen 2500ms
-- ✅ Hero-Bild (taktikboard.jpg)
-- ✅ PDF Export Modal (Ausgefüllt/Blanko)
-- ✅ TXT Export mit detailliertem Report
-- ✅ Reset-Funktion
-- ✅ Entwicklungsfelder-Overlay (<70% Warnung)
-- ✅ Neues Design: Schwarz/Magenta/Weiß
+- **Frontend**: Standalone HTML/CSS/JavaScript
+- **Storage**: localStorage (state, sections, notes)
+- **PWA**: manifest.json, sw.js
+- **Responsive**: Mobile-first, 2-column breakpoint at 1200px
 
 ## Test Results
-- Frontend: 100% passed
-- All 8 sections verified
-- 365 stars total across all tasks
-- localStorage persistence working
+- Frontend: 95% (1 Playwright-Limitation, keine echte Bugs)
+- All features working correctly
 
-## Prioritized Backlog
-### P0 (Critical) - Done
-- ✅ Datenstruktur wiederhergestellt
-- ✅ Design repariert
+## Files
+- `/app/index.html` - Hauptanwendung
+- `/app/splash.png` - FFF Logo
+- `/app/taktikboard.jpg` - Hero/Splash Bild
+- `/app/manifest.json` - PWA Manifest
+- `/app/sw.js` - Service Worker
 
+## Backlog
 ### P1 (High)
-- [ ] Offline-Modus verbessern (Service Worker)
-- [ ] Daten-Synchronisation zwischen Geräten
+- [ ] Historische Bewertungen speichern
+- [ ] Datums-Tracking für Sessions
 
 ### P2 (Medium)
-- [ ] Historische Bewertungen speichern
-- [ ] Vergleichs-Reports zwischen Sessions
-- [ ] Notizfeld pro Task
+- [ ] Vergleichs-Reports
+- [ ] Excel Export
 
-### P3 (Low/Future)
-- [ ] Team-Dashboard (mehrere Benutzer)
-- [ ] Export nach Excel
-- [ ] Benachrichtigungen für Coaching-Termine
-
-## Next Tasks
-1. Optionaler Service Worker Update für bessere Offline-Unterstützung
-2. Datums-Tracking für Export-Reports
+### P3 (Future)
+- [ ] Team-Dashboard
+- [ ] Cloud-Sync
