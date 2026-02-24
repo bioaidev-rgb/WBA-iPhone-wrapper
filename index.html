@@ -3,411 +3,888 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FFF – Flamingo Feedback</title>
+<title>FFF – Flamingo Feedback Formular WBA</title>
 <meta name="theme-color" content="#E20074">
+<link rel="manifest" href="manifest.json">
 
 <style>
 :root{
---magenta:#E20074;
---bg:#0c0c10;
---section:#141418;
---muted:#777;
+  --magenta:#E20074;
+  --bg:#000000;
+  --section:#0a0a0a;
+  --card-bg:#111111;
+  --muted:#888;
+  --white:#ffffff;
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 
 body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-background:var(--bg);
-color:white;
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--magenta);
+  overflow-x:hidden;
+}
+
+/* SPLASH SCREEN */
+#splash{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  transition:opacity 0.5s ease;
+}
+#splash.fade-out{
+  opacity:0;
+  pointer-events:none;
+}
+#splash img{
+  max-width:85%;
+  max-height:70vh;
+  object-fit:contain;
+}
+
+/* HERO */
+.hero{
+  height:40vh;
+  min-height:220px;
+  max-height:380px;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-bottom:3px solid var(--magenta);
+}
+.hero img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+/* MAIN */
+.main{
+  background:var(--bg);
+  min-height:100vh;
 }
 
 /* HEADER */
 .header{
-background:var(--bg);
-border-bottom:3px solid var(--magenta);
-padding:24px 20px 20px 20px;
-text-align:center;
-position:sticky;
-top:0;
-z-index:10;
+  background:var(--bg);
+  border-bottom:3px solid var(--magenta);
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:10;
 }
 
 .app-title{
-font-size:28px;
-font-weight:700;
-letter-spacing:.5px;
+  font-size:22px;
+  font-weight:700;
+  color:var(--magenta);
+  letter-spacing:1px;
 }
 
-.score-display{
-font-size:48px;
-font-weight:800;
-color:var(--magenta);
-margin-top:6px;
+#scoreDisplay{
+  font-size:48px;
+  font-weight:800;
+  color:var(--magenta);
+  text-shadow:0 0 20px rgba(226,0,116,0.5);
 }
 
 .warnIcon{
-position:absolute;
-right:20px;
-top:30px;
-font-size:22px;
-display:none;
-cursor:pointer;
+  font-size:26px;
+  display:none;
+  cursor:pointer;
+  filter:drop-shadow(0 0 8px rgba(255,200,0,0.8));
 }
 
 /* CONTAINER */
 .container{
-max-width:900px;
-margin:auto;
-padding:24px;
+  max-width:900px;
+  margin:auto;
+  padding:24px;
 }
 
-/* SECTION */
+/* SECTION WRAPPER */
 .section-wrapper{
-background:var(--section);
-border-left:4px solid var(--magenta);
-border-radius:14px;
-padding:20px;
-margin-bottom:28px;
-box-shadow:0 0 18px rgba(226,0,116,0.15);
-transition:.3s;
+  background:var(--section);
+  border:3px solid var(--magenta);
+  border-radius:16px;
+  padding:4px;
+  margin-bottom:28px;
+  box-shadow:0 0 25px rgba(226,0,116,0.3);
+  transition:all 0.3s ease;
+}
+.section-wrapper.disabled{
+  opacity:0.3;
+  border-color:#333;
+  box-shadow:none;
+  filter:grayscale(100%);
 }
 
-.section-wrapper.disabled{
-opacity:.35;
-border-left-color:#444;
-box-shadow:none;
+/* INNER WHITE BORDER */
+.section-inner{
+  background:var(--card-bg);
+  border:2px solid var(--white);
+  border-radius:12px;
+  padding:20px;
 }
 
 .section-title{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:12px;
-font-size:20px;
-font-weight:600;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+  padding-bottom:12px;
+  border-bottom:2px solid var(--magenta);
+}
+
+.section-name{
+  font-size:18px;
+  font-weight:700;
+  color:var(--magenta);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+.toggle-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
 
 .toggle-label{
-font-size:12px;
-color:#aaa;
-margin-right:8px;
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
 }
 
 /* SWITCH */
-.switch{position:relative;width:44px;height:24px;}
+.switch{position:relative;width:48px;height:26px;}
 .switch input{opacity:0;width:0;height:0;}
 .slider{
-position:absolute;inset:0;
-background:#555;border-radius:24px;transition:.3s;
+  position:absolute;inset:0;
+  background:#333;border-radius:26px;transition:.3s;
+  border:2px solid #555;
 }
 .slider:before{
-content:"";position:absolute;height:18px;width:18px;
-left:3px;top:3px;background:white;border-radius:50%;transition:.3s;
+  content:"";position:absolute;height:18px;width:18px;
+  left:3px;top:2px;background:#666;border-radius:50%;transition:.3s;
 }
-input:checked + .slider{background:var(--magenta);}
-input:checked + .slider:before{transform:translateX(20px);}
+input:checked + .slider{background:var(--magenta);border-color:var(--magenta);}
+input:checked + .slider:before{transform:translateX(22px);background:var(--white);}
 
 /* CARD */
 .card{
-background:#1c1c22;
-border-radius:10px;
-padding:14px;
-margin-bottom:14px;
+  background:#1a1a1a;
+  border:1px solid #333;
+  border-radius:10px;
+  padding:14px;
+  margin-bottom:12px;
+  transition:all 0.2s;
+}
+.card:hover{
+  border-color:var(--magenta);
+  box-shadow:0 0 10px rgba(226,0,116,0.2);
 }
 
-.task{margin-bottom:8px;font-size:14px;}
+.task{
+  font-size:14px;
+  font-weight:500;
+  color:var(--magenta);
+  margin-bottom:10px;
+}
 
 .stars{
-display:flex;
-gap:12px;
+  display:flex;
+  gap:8px;
 }
 
 .star{
-font-size:38px;
-color:#444;
-cursor:pointer;
-user-select:none;
-transition:.15s;
+  font-size:36px;
+  color:#333;
+  cursor:pointer;
+  user-select:none;
+  transition:all 0.15s ease;
+  text-shadow:0 0 0 transparent;
 }
-
+.star:hover{
+  transform:scale(1.15);
+}
 .star.active{
-color:var(--magenta);
-transform:scale(1.05);
-}
-
-/* OVERLAY */
-.sheet{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.6);
-display:none;
-align-items:flex-end;
-}
-
-.sheet.open{display:flex;}
-
-.sheet-inner{
-background:#1c1c22;
-width:100%;
-border-radius:24px 24px 0 0;
-padding:24px;
-max-height:70%;
-overflow:auto;
+  color:var(--magenta);
+  text-shadow:0 0 15px rgba(226,0,116,0.8);
+  transform:scale(1.1);
 }
 
 /* FOOTER */
 .footer{
-position:sticky;
-bottom:0;
-background:#111;
-padding:14px;
-display:flex;
-gap:10px;
+  position:sticky;
+  bottom:0;
+  background:#0a0a0a;
+  border-top:2px solid var(--magenta);
+  padding:14px;
+  display:flex;
+  gap:10px;
 }
 
 button{
-flex:1;
-padding:16px;
-border:none;
-border-radius:14px;
-background:var(--magenta);
-color:white;
-font-weight:600;
-font-size:16px;
-cursor:pointer;
+  flex:1;
+  padding:16px;
+  border:2px solid var(--magenta);
+  border-radius:14px;
+  background:transparent;
+  color:var(--magenta);
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+button:hover{
+  background:var(--magenta);
+  color:var(--white);
+  box-shadow:0 0 20px rgba(226,0,116,0.5);
 }
 
-/* PRINT */
+/* OVERLAY */
+.sheet{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:none;
+  align-items:flex-end;
+  z-index:100;
+}
+.sheet.open{display:flex;}
+
+.sheet-inner{
+  background:#111;
+  border:3px solid var(--magenta);
+  border-bottom:none;
+  width:100%;
+  border-radius:24px 24px 0 0;
+  padding:24px;
+  max-height:70%;
+  overflow:auto;
+}
+.sheet-inner h3{
+  color:var(--magenta);
+  margin-top:0;
+  border-bottom:2px solid var(--magenta);
+  padding-bottom:10px;
+}
+.sheet-inner div{
+  color:var(--white);
+  padding:8px 0;
+  border-bottom:1px solid #333;
+}
+
+/* PDF MODAL */
+.pdf-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.9);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:200;
+}
+.pdf-modal.open{display:flex;}
+
+.pdf-modal-inner{
+  background:#111;
+  border:3px solid var(--magenta);
+  border-radius:20px;
+  padding:30px;
+  text-align:center;
+  max-width:90%;
+  width:400px;
+}
+.pdf-modal-inner h3{
+  color:var(--magenta);
+  margin-top:0;
+  font-size:20px;
+}
+.pdf-modal-inner p{
+  color:#aaa;
+  font-size:14px;
+  margin-bottom:20px;
+}
+.pdf-btn{
+  display:block;
+  width:100%;
+  margin-bottom:12px;
+  padding:16px;
+}
+.pdf-btn.secondary{
+  background:#222;
+  border-color:#555;
+  color:#aaa;
+}
+.pdf-btn.secondary:hover{
+  background:#333;
+  border-color:#777;
+  color:var(--white);
+}
+
+/* PRINT STYLES */
 @media print{
-body{background:white;color:black;}
-
-.header{
-background:white;
-border:none;
-text-align:left;
-padding:0;
-margin-bottom:20px;
-}
-
-.app-title{color:black;font-size:26px;}
-.score-display{color:#E20074;font-size:34px;}
-
-.section-wrapper{
-background:white;
-border-left:6px solid #E20074;
-box-shadow:none;
-opacity:1 !important;
-}
-
-.section-title{
-border-bottom:2px solid #E20074;
-padding-bottom:6px;
-}
-
-.footer,.warnIcon,.sheet{display:none !important;}
+  body{
+    background:white !important;
+    color:black !important;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  
+  #splash,.hero,.footer,.warnIcon,.sheet,.pdf-modal{
+    display:none !important;
+  }
+  
+  .header{
+    position:relative;
+    background:white !important;
+    border-bottom:4px solid var(--magenta) !important;
+    padding:10px 20px;
+  }
+  
+  .app-title{
+    color:var(--magenta) !important;
+  }
+  
+  #scoreDisplay{
+    color:var(--magenta) !important;
+    text-shadow:none !important;
+    font-size:36px;
+  }
+  
+  .container{
+    padding:10px;
+  }
+  
+  .section-wrapper{
+    background:white !important;
+    border:3px solid var(--magenta) !important;
+    box-shadow:none !important;
+    margin-bottom:15px;
+    page-break-inside:avoid;
+  }
+  .section-wrapper.disabled{
+    opacity:0.5;
+    border-color:#ccc !important;
+  }
+  
+  .section-inner{
+    background:white !important;
+    border:2px solid #ddd !important;
+  }
+  
+  .section-title{
+    border-bottom:2px solid var(--magenta) !important;
+  }
+  
+  .section-name{
+    color:var(--magenta) !important;
+    font-size:16px;
+  }
+  
+  .toggle-wrap{
+    display:none !important;
+  }
+  
+  .card{
+    background:#f8f8f8 !important;
+    border:1px solid #ddd !important;
+    margin-bottom:8px;
+    padding:10px;
+  }
+  
+  .task{
+    color:black !important;
+    font-size:13px;
+  }
+  
+  .star{
+    font-size:28px !important;
+    text-shadow:none !important;
+  }
+  .star.active{
+    color:var(--magenta) !important;
+  }
+  
+  /* Blanko Print Mode */
+  body.print-blanko .star{
+    color:#ddd !important;
+  }
+  body.print-blanko .star.active{
+    color:#ddd !important;
+  }
+  body.print-blanko #scoreDisplay{
+    visibility:hidden;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-<div class="app-title">Flamingo Feedback</div>
-<div class="score-display" id="scoreDisplay">–</div>
-<div class="warnIcon" id="warnIcon">⚠️</div>
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <img src="taktikboard.jpg" alt="Flamingo Taktikboard">
 </div>
 
-<div class="container" id="app"></div>
-
-<div class="footer">
-<button id="exportTxtBtn">Export TXT</button>
-<button id="exportPdfBtn">PDF Report</button>
+<!-- HERO -->
+<div class="hero">
+  <img src="taktikboard.jpg" alt="Flamingo Feedback">
 </div>
 
+<!-- MAIN CONTENT -->
+<div class="main">
+  <div class="header">
+    <div class="app-title">Flamingo Feedback WBA</div>
+    <div id="scoreDisplay">–</div>
+    <div class="warnIcon" id="warnIcon">⚠️</div>
+  </div>
+
+  <div class="container" id="app"></div>
+
+  <div class="footer">
+    <button id="exportTxtBtn">Export TXT</button>
+    <button id="exportPdfBtn">PDF Report</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+</div>
+
+<!-- WARNING OVERLAY -->
 <div class="sheet" id="sheet">
-<div class="sheet-inner">
-<h3>Entwicklungsfelder (&lt;70%)</h3>
-<div id="sheetContent"></div>
+  <div class="sheet-inner">
+    <h3>Entwicklungsfelder (&lt;70%)</h3>
+    <div id="sheetContent"></div>
+  </div>
 </div>
+
+<!-- PDF OPTIONS MODAL -->
+<div class="pdf-modal" id="pdfModal">
+  <div class="pdf-modal-inner">
+    <h3>PDF Export</h3>
+    <p>Wähle das gewünschte Format:</p>
+    <button class="pdf-btn" id="pdfFilled">Ausgefüllt (mit Bewertungen)</button>
+    <button class="pdf-btn" id="pdfBlanko">Blanko (leere Sterne)</button>
+    <button class="pdf-btn secondary" id="pdfCancel">Abbrechen</button>
+  </div>
 </div>
 
 <script>
 
-/* STATE */
-let state = JSON.parse(localStorage.getItem("vertriebs_state")) || {};
-let sectionState = JSON.parse(localStorage.getItem("vertriebs_sections")) || {};
+/* SPLASH SCREEN - 2500ms */
+setTimeout(()=>{
+  document.getElementById("splash").classList.add("fade-out");
+  setTimeout(()=>{
+    document.getElementById("splash").style.display="none";
+  },500);
+},2500);
 
-/* STRUCTURE */
+/* STATE */
+let state = JSON.parse(localStorage.getItem("wba_feedback_state")) || {};
+let sectionState = JSON.parse(localStorage.getItem("wba_feedback_sections")) || {};
+
+/* COMPLETE STRUCTURE - 8 SECTIONS */
 const structure = {
-"01 CHECK-IN":["Kunden wahrnehmen","Auf Kunden zugehen","Freundlich begrüßen"],
-"02 BEDARFSANALYSE":["Fokus auf Kunden","Anliegen aufnehmen"],
-"03 ABSCHLUSS":["Abschlussfrage","Buchen"]
+  "01 CHECK-IN":[
+    "Kunden wahrnehmen",
+    "Auf Kunden zugehen",
+    "Freundlich begrüßen",
+    "Wohlfühl-Atmosphäre schaffen",
+    "Gut aufgehoben Gefühl schaffen",
+    "Getränke anbieten",
+    "Smalltalk führen",
+    "Digitales Welcome nutzen",
+    "Kunden im DWM anlegen",
+    "Erscheinungsbild",
+    "Auftreten",
+    "Shopauftritt"
+  ],
+  "02 BEDARFS- & UMFELDANALYSE":[
+    "Fokus auf Kunden",
+    "Keine Systemnutzung",
+    "10 Informationen erfassen",
+    "Infos übertragen",
+    "Anliegen aufnehmen",
+    "Wünsche erfragen",
+    "Bedürfnisse erfragen",
+    "PK/GK identifizieren",
+    "Kaufmotive erkennen",
+    "Bedarf",
+    "Umfeld",
+    "Bestand",
+    "Gesprächsnotiz",
+    "Systemcheck",
+    "Bestand vervollständigen",
+    "Magenta View",
+    "KEK aktualisieren",
+    "Glasfaser prüfen",
+    "Systeme beherrschen"
+  ],
+  "03 LÖSUNG ERARBEITEN":[
+    "Infos zusammenfassen",
+    "Bildabgleich",
+    "JA einholen",
+    "Weitere Wünsche",
+    "Cross-Selling",
+    "Upselling",
+    "Versteckte Bedarfe",
+    "Geduld erbitten",
+    "Experten einbinden"
+  ],
+  "04 LÖSUNG VORSTELLEN":[
+    "Lösung ohne Preis",
+    "Lösung skizzieren",
+    "Nutzen hervorheben",
+    "Shop live nutzen",
+    "Shop digital nutzen",
+    "Erlebbar machen",
+    "Finaler Bildabgleich",
+    "Weitere JA"
+  ],
+  "05 ANGEBOT VORSTELLEN":[
+    "Ins Angebotstool",
+    "Aktionen nutzen",
+    "Angebot mit Preisen"
+  ],
+  "06 EINWANDBEHANDLUNG":[
+    "Einwände unterscheiden",
+    "Nonverbal beachten",
+    "Einwände annehmen",
+    "Einwandmethoden"
+  ],
+  "07 ABSCHLUSS & BUCHEN":[
+    "Alternativfragen",
+    "Abschlussfrage",
+    "Stille aushalten",
+    "Buchen",
+    "Qualitätsstandards"
+  ],
+  "08 KUNDENBINDUNG":[
+    "Bestärken",
+    "Folgekontakte",
+    "Kundenzuführung",
+    "BKM",
+    "OTV",
+    "Leads",
+    "POM",
+    "Weiterempfehlung",
+    "Feedback erklären",
+    "SMS",
+    "Anruf",
+    "Verabschieden",
+    "Zur Tür begleiten"
+  ]
 };
 
 /* INIT SECTION STATE */
 Object.keys(structure).forEach(s=>{
-if(sectionState[s]===undefined) sectionState[s]=true;
+  if(sectionState[s]===undefined) sectionState[s]=true;
 });
 
-/* METRICS */
+/* SAVE STATE */
+function saveState(){
+  localStorage.setItem("wba_feedback_state",JSON.stringify(state));
+  localStorage.setItem("wba_feedback_sections",JSON.stringify(sectionState));
+}
+
+/* METRICS CALCULATION */
 function computeMetrics(){
-let totalPossible=0,totalAchieved=0,issues=[];
-for(let section in structure){
-if(!sectionState[section]) continue;
-structure[section].forEach(task=>{
-let id=section+"_"+task;
-let rating=state[id]?.rating||0;
-totalPossible+=5;
-totalAchieved+=rating;
-if(rating>0 && rating/5<0.7){
-issues.push({task,percent:(rating/5*100)});
-}
-});
-}
-let score= totalPossible===0 ? "-" : ((totalAchieved/totalPossible)*100).toFixed(1)+"%";
-issues.sort((a,b)=>a.percent-b.percent);
-return {score,issues};
+  let totalPossible=0, totalAchieved=0, issues=[];
+  
+  for(let section in structure){
+    if(!sectionState[section]) continue;
+    
+    structure[section].forEach(task=>{
+      let id=section+"_"+task;
+      let rating=state[id]?.rating||0;
+      
+      if(rating>0){
+        totalPossible+=5;
+        totalAchieved+=rating;
+        
+        if(rating/5<0.7){
+          issues.push({
+            section:section,
+            task:task,
+            percent:(rating/5*100)
+          });
+        }
+      }
+    });
+  }
+  
+  let score= totalPossible===0 ? "–" : ((totalAchieved/totalPossible)*100).toFixed(1)+"%";
+  issues.sort((a,b)=>a.percent-b.percent);
+  
+  return {score, issues, totalPossible, totalAchieved};
 }
 
-/* UPDATE SCORE */
+/* UPDATE SCORE DISPLAY */
 function updateScore(){
-let m=computeMetrics();
-document.getElementById("scoreDisplay").innerText=m.score;
-let warn=document.getElementById("warnIcon");
-warn.style.display=m.issues.length?"block":"none";
+  let m=computeMetrics();
+  document.getElementById("scoreDisplay").innerText=m.score;
+  
+  let warn=document.getElementById("warnIcon");
+  warn.style.display=m.issues.length>0?"block":"none";
 }
 
 /* TOUCH SAFE STAR HANDLER */
 function addStarListener(el,callback){
-el.addEventListener("click",callback);
-el.addEventListener("touchstart",(e)=>{
-e.preventDefault();
-callback();
-},{passive:false});
+  let handled=false;
+  
+  el.addEventListener("touchstart",(e)=>{
+    e.preventDefault();
+    if(!handled){
+      handled=true;
+      callback();
+      setTimeout(()=>handled=false,300);
+    }
+  },{passive:false});
+  
+  el.addEventListener("click",(e)=>{
+    if(!handled){
+      callback();
+    }
+  });
 }
 
-/* RENDER */
+/* RENDER APP */
 function init(){
-const app=document.getElementById("app");
+  const app=document.getElementById("app");
+  app.innerHTML="";
 
-for(let section in structure){
-
-let wrapper=document.createElement("div");
-wrapper.className="section-wrapper";
-if(!sectionState[section]) wrapper.classList.add("disabled");
-
-let title=document.createElement("div");
-title.className="section-title";
-title.innerHTML=`${section}`;
-
-let toggleWrap=document.createElement("div");
-toggleWrap.style.display="flex";
-toggleWrap.style.alignItems="center";
-
-let label=document.createElement("span");
-label.className="toggle-label";
-label.innerText="In Score";
-
-let switchWrap=document.createElement("label");
-switchWrap.className="switch";
-
-let checkbox=document.createElement("input");
-checkbox.type="checkbox";
-checkbox.checked=sectionState[section];
-
-checkbox.onchange=e=>{
-sectionState[section]=e.target.checked;
-localStorage.setItem("vertriebs_sections",JSON.stringify(sectionState));
-wrapper.classList.toggle("disabled",!e.target.checked);
-updateScore();
-};
-
-let slider=document.createElement("span");
-slider.className="slider";
-
-switchWrap.appendChild(checkbox);
-switchWrap.appendChild(slider);
-toggleWrap.appendChild(label);
-toggleWrap.appendChild(switchWrap);
-
-title.appendChild(toggleWrap);
-wrapper.appendChild(title);
-
-structure[section].forEach(task=>{
-let id=section+"_"+task;
-let entry=state[id]||{rating:0};
-
-let card=document.createElement("div");
-card.className="card";
-
-let t=document.createElement("div");
-t.className="task";
-t.innerText=task;
-card.appendChild(t);
-
-let stars=document.createElement("div");
-stars.className="stars";
-
-for(let i=1;i<=5;i++){
-let s=document.createElement("div");
-s.className="star";
-if(entry.rating>=i) s.classList.add("active");
-
-addStarListener(s,()=>{
-if(!sectionState[section]) return;
-state[id]={rating:i};
-localStorage.setItem("vertriebs_state",JSON.stringify(state));
-[...stars.children].forEach((c,index)=>{
-c.classList.toggle("active",index<i);
-});
-updateScore();
-});
-stars.appendChild(s);
+  for(let section in structure){
+    
+    // Section Wrapper
+    let wrapper=document.createElement("div");
+    wrapper.className="section-wrapper";
+    wrapper.setAttribute("data-section",section);
+    if(!sectionState[section]) wrapper.classList.add("disabled");
+    
+    // Inner container with white border
+    let inner=document.createElement("div");
+    inner.className="section-inner";
+    
+    // Section Title
+    let titleDiv=document.createElement("div");
+    titleDiv.className="section-title";
+    
+    let nameSpan=document.createElement("span");
+    nameSpan.className="section-name";
+    nameSpan.innerText=section;
+    
+    // Toggle Switch
+    let toggleWrap=document.createElement("div");
+    toggleWrap.className="toggle-wrap";
+    
+    let label=document.createElement("span");
+    label.className="toggle-label";
+    label.innerText="Aktiv";
+    
+    let switchLabel=document.createElement("label");
+    switchLabel.className="switch";
+    
+    let checkbox=document.createElement("input");
+    checkbox.type="checkbox";
+    checkbox.checked=sectionState[section];
+    checkbox.setAttribute("data-testid","section-toggle-"+section.replace(/\s+/g,"-"));
+    
+    checkbox.onchange=(e)=>{
+      sectionState[section]=e.target.checked;
+      wrapper.classList.toggle("disabled",!e.target.checked);
+      saveState();
+      updateScore();
+    };
+    
+    let slider=document.createElement("span");
+    slider.className="slider";
+    
+    switchLabel.appendChild(checkbox);
+    switchLabel.appendChild(slider);
+    toggleWrap.appendChild(label);
+    toggleWrap.appendChild(switchLabel);
+    
+    titleDiv.appendChild(nameSpan);
+    titleDiv.appendChild(toggleWrap);
+    inner.appendChild(titleDiv);
+    
+    // Tasks
+    structure[section].forEach(task=>{
+      let id=section+"_"+task;
+      let entry=state[id]||{rating:0};
+      
+      let card=document.createElement("div");
+      card.className="card";
+      card.setAttribute("data-testid","task-card-"+id.replace(/\s+/g,"-"));
+      
+      let taskDiv=document.createElement("div");
+      taskDiv.className="task";
+      taskDiv.innerText=task;
+      card.appendChild(taskDiv);
+      
+      let starsDiv=document.createElement("div");
+      starsDiv.className="stars";
+      
+      for(let i=1;i<=5;i++){
+        let star=document.createElement("div");
+        star.className="star";
+        star.innerHTML="★";
+        star.setAttribute("data-testid","star-"+id.replace(/\s+/g,"-")+"-"+i);
+        
+        if(entry.rating>=i) star.classList.add("active");
+        
+        addStarListener(star,()=>{
+          if(!sectionState[section]) return;
+          
+          // Toggle: if clicking same rating, reset to 0
+          if(state[id]?.rating===i){
+            state[id]={rating:0};
+          }else{
+            state[id]={rating:i};
+          }
+          
+          saveState();
+          
+          [...starsDiv.children].forEach((s,index)=>{
+            s.classList.toggle("active",index<state[id].rating);
+          });
+          
+          updateScore();
+        });
+        
+        starsDiv.appendChild(star);
+      }
+      
+      card.appendChild(starsDiv);
+      inner.appendChild(card);
+    });
+    
+    wrapper.appendChild(inner);
+    app.appendChild(wrapper);
+  }
+  
+  updateScore();
 }
 
-card.appendChild(stars);
-wrapper.appendChild(card);
-});
-
-app.appendChild(wrapper);
-}
-
-updateScore();
-}
-
-/* PDF PRINT */
+/* PDF EXPORT MODAL */
 document.getElementById("exportPdfBtn").onclick=function(){
-window.print();
+  document.getElementById("pdfModal").classList.add("open");
 };
 
-/* TXT */
+document.getElementById("pdfCancel").onclick=function(){
+  document.getElementById("pdfModal").classList.remove("open");
+};
+
+/* PDF - FILLED */
+document.getElementById("pdfFilled").onclick=function(){
+  document.getElementById("pdfModal").classList.remove("open");
+  document.body.classList.remove("print-blanko");
+  setTimeout(()=>window.print(),100);
+};
+
+/* PDF - BLANKO */
+document.getElementById("pdfBlanko").onclick=function(){
+  document.getElementById("pdfModal").classList.remove("open");
+  document.body.classList.add("print-blanko");
+  setTimeout(()=>{
+    window.print();
+    document.body.classList.remove("print-blanko");
+  },100);
+};
+
+/* TXT EXPORT */
 document.getElementById("exportTxtBtn").onclick=function(){
-let m=computeMetrics();
-let blob=new Blob(["Score: "+m.score],{type:"text/plain"});
-let link=document.createElement("a");
-link.href=URL.createObjectURL(blob);
-link.download="report.txt";
-link.click();
+  let m=computeMetrics();
+  let date=new Date().toLocaleDateString("de-DE");
+  let time=new Date().toLocaleTimeString("de-DE");
+  
+  let text=`FLAMINGO FEEDBACK WBA REPORT\n`;
+  text+=`============================\n`;
+  text+=`Datum: ${date} ${time}\n`;
+  text+=`Gesamtscore: ${m.score}\n\n`;
+  
+  for(let section in structure){
+    let isActive=sectionState[section];
+    text+=`\n${section} ${isActive?"[AKTIV]":"[DEAKTIVIERT]"}\n`;
+    text+=`${"─".repeat(40)}\n`;
+    
+    structure[section].forEach(task=>{
+      let id=section+"_"+task;
+      let rating=state[id]?.rating||0;
+      let stars="★".repeat(rating)+"☆".repeat(5-rating);
+      text+=`  ${task}: ${stars} (${rating}/5)\n`;
+    });
+  }
+  
+  if(m.issues.length>0){
+    text+=`\n\nENTWICKLUNGSFELDER (<70%)\n`;
+    text+=`${"═".repeat(40)}\n`;
+    m.issues.forEach(i=>{
+      text+=`  • ${i.task} - ${i.percent.toFixed(0)}%\n`;
+    });
+  }
+  
+  let blob=new Blob([text],{type:"text/plain;charset=utf-8"});
+  let link=document.createElement("a");
+  link.href=URL.createObjectURL(blob);
+  link.download=`FFF-WBA-Report_${date.replace(/\./g,"-")}.txt`;
+  link.click();
 };
 
-/* OVERLAY */
+/* RESET */
+document.getElementById("resetBtn").onclick=function(){
+  if(confirm("Alle Bewertungen zurücksetzen?")){
+    state={};
+    Object.keys(structure).forEach(s=>sectionState[s]=true);
+    saveState();
+    init();
+  }
+};
+
+/* WARNING OVERLAY */
 document.getElementById("warnIcon").onclick=function(){
-let m=computeMetrics();
-let sheet=document.getElementById("sheet");
-let content=document.getElementById("sheetContent");
-content.innerHTML="";
-m.issues.slice(0,5).forEach(i=>{
-content.innerHTML+=`<div>${i.task} – ${i.percent.toFixed(0)}%</div>`;
-});
-sheet.classList.toggle("open");
-};
-document.getElementById("sheet").onclick=e=>{
-if(e.target.id==="sheet") e.currentTarget.classList.remove("open");
+  let m=computeMetrics();
+  let sheet=document.getElementById("sheet");
+  let content=document.getElementById("sheetContent");
+  content.innerHTML="";
+  
+  if(m.issues.length===0){
+    content.innerHTML="<div>Keine Entwicklungsfelder gefunden!</div>";
+  }else{
+    m.issues.slice(0,10).forEach(i=>{
+      content.innerHTML+=`<div><strong>${i.task}</strong> (${i.section}) – ${i.percent.toFixed(0)}%</div>`;
+    });
+  }
+  
+  sheet.classList.add("open");
 };
 
-/* START */
+document.getElementById("sheet").onclick=function(e){
+  if(e.target.id==="sheet") this.classList.remove("open");
+};
+
+/* CLOSE MODALS ON ESC */
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"){
+    document.getElementById("sheet").classList.remove("open");
+    document.getElementById("pdfModal").classList.remove("open");
+  }
+});
+
+/* START APP */
 init();
 
 </script>
