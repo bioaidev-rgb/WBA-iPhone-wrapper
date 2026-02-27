@@ -1,4 +1,4 @@
-const CACHE_NAME = "fff-cache-v3";
+const CACHE_NAME = "fff-cache-v4";
 
 const ASSETS = [
   "./",
@@ -7,7 +7,8 @@ const ASSETS = [
   "./splash.png",
   "./logo2.png",
   "./taktikboard.png",
-  "./header_print.png"
+  "./header_print.png",
+  "./blank_form.pdf"
 ];
 
 self.addEventListener("install", event => {

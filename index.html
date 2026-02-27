@@ -662,7 +662,7 @@ button:hover{
 </div>
 
 <!-- MAIN CONTENT -->
-<div class="main">
+<div class="main" id="mainContent" style="display:none;">
   <div class="header">
     <div class="app-title">Flamingo Feedback WBA</div>
     <div id="scoreDisplay">–</div>
@@ -701,7 +701,7 @@ button:hover{
 
 /* SPLASH SCREEN SEQUENCE */
 // Splash 1: FFF Logo - 2500ms
-// Splash 2: Logo2 - 2000ms
+// Splash 2: Taktikboard - 2000ms
 // Then: Hero section
 
 const splash1 = document.getElementById("splash1");
@@ -718,7 +718,11 @@ setTimeout(()=>{
       splash2.classList.add("fade-out");
       setTimeout(()=>{
         splash2.classList.add("hidden");
+        
         heroSection.style.display = "flex";
+        document.getElementById("mainContent").style.display = "block";
+        window.scrollTo(0,0);
+    
       },500);
     },2000);
     
@@ -1077,7 +1081,15 @@ document.getElementById("pdfFilled").onclick=function(){
 /* PDF - BLANKO */
 document.getElementById("pdfBlanko").onclick=function(){
   document.getElementById("pdfModal").classList.remove("open");
-  document.body.classList.add("print-blanko");
+  const link = document.createElement("a");
+  link.href = "blank_form.pdf";
+  link.download = "FFF-WBA-Blanko.pdf";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+  document.getElementById("pdfModal").classList.remove("open");
+  // removed
   setTimeout(()=>{
     window.print();
     document.body.classList.remove("print-blanko");
