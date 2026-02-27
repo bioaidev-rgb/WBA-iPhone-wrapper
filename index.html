@@ -628,16 +628,12 @@ button:hover{
   }
   
   /* BLANKO MODE */
-  body.print-blanko .star{
     color:#ddd !important;
   }
-  body.print-blanko .star.active{
     color:#ddd !important;
   }
-  body.print-blanko #scoreDisplay{
     visibility:hidden;
   }
-  body.print-blanko .note-field textarea{
     background:#fafafa !important;
   }
 }
@@ -653,7 +649,7 @@ button:hover{
 
 <!-- SPLASH 2: TAKTIKBOARD - 2000ms -->
 <div class="splash-container hidden" id="splash2">
-  <img src="logo2.png" alt="Logo">
+  <img src="taktikboard.png" alt="Taktikboard">
 </div>
 
 <!-- HERO -->
@@ -662,7 +658,7 @@ button:hover{
 </div>
 
 <!-- MAIN CONTENT -->
-<div class="main" id="mainContent" style="display:none;">
+<div class="main">
   <div class="header">
     <div class="app-title">Flamingo Feedback WBA</div>
     <div id="scoreDisplay">–</div>
@@ -718,11 +714,7 @@ setTimeout(()=>{
       splash2.classList.add("fade-out");
       setTimeout(()=>{
         splash2.classList.add("hidden");
-        
         heroSection.style.display = "flex";
-        document.getElementById("mainContent").style.display = "block";
-        window.scrollTo(0,0);
-    
       },500);
     },2000);
     
@@ -1074,27 +1066,11 @@ document.getElementById("pdfCancel").onclick=function(){
 /* PDF - FILLED */
 document.getElementById("pdfFilled").onclick=function(){
   document.getElementById("pdfModal").classList.remove("open");
-  document.body.classList.remove("print-blanko");
-  setTimeout(()=>window.print(),100);
+  setTimeout(()=>,100);
 };
 
 /* PDF - BLANKO */
-document.getElementById("pdfBlanko").onclick=function(){
-  document.getElementById("pdfModal").classList.remove("open");
-  const link = document.createElement("a");
-  link.href = "blank_form.pdf";
-  link.download = "FFF-WBA-Blanko.pdf";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-  document.getElementById("pdfModal").classList.remove("open");
-  // removed
-  setTimeout(()=>{
-    window.print();
-    document.body.classList.remove("print-blanko");
-  },100);
-};
+
 
 /* TXT EXPORT */
 document.getElementById("exportTxtBtn").onclick=function(){
@@ -1190,6 +1166,17 @@ if('serviceWorker' in navigator){
 
 /* START APP */
 init();
+
+
+document.getElementById("pdfBlanko").onclick = function(){
+  document.getElementById("pdfModal").classList.remove("open");
+  const link = document.createElement("a");
+  link.href = "blank_form.pdf";
+  link.download = "FFF-WBA-Blanko.pdf";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 </script>
 </body>
